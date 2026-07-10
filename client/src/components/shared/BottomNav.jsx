@@ -1,17 +1,21 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Home, Trophy, User } from 'lucide-react'
+import { Brain, Home, Trophy, User } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
+import { useAuth } from '../../context/AuthContext'
 
 const items = [
   { path: '/home',        icon: Home,   label: 'Home' },
+  { path: '/adaptive-learning', icon: Brain, label: 'ALI' },
   { path: '/leaderboard', icon: Trophy, label: 'Rank' },
   { path: '/profile',     icon: User,   label: 'Profile' },
 ]
 
 export default function BottomNav() {
   const { colors } = useTheme()
+  const { user } = useAuth()
   const navigate   = useNavigate()
   const location   = useLocation()
+  const visibleItems = user?.isGuest ? items.filter(item => item.path !== '/adaptive-learning') : items
 
   return (
     <nav style={{
@@ -21,7 +25,7 @@ export default function BottomNav() {
       padding: '8px 0 env(safe-area-inset-bottom, 8px)',
       // shown via CSS media query
     }} className="bottom-nav">
-      {items.map(({ path, icon: Icon, label }) => {
+      {visibleItems.map(({ path, icon: Icon, label }) => {
         const active = location.pathname === path
         return (
           <button key={path} onClick={() => navigate(path)} style={{

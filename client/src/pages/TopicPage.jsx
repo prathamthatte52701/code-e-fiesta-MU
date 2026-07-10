@@ -234,42 +234,6 @@ export default function TopicPage() {
   const initQAttempted = levelData.questionsAttempted || 0
   const canAccessChallenge = user?.isDeveloper || ((user?.streak >= 7 || progress?.aiChallengeUnlocked) && progress?.topicCompleted)
 
-  const LevelProgress = () => (
-    <div style={{
-      background: colors.surface, border: `1px solid ${colors.border}`,
-      borderRadius: 14, padding: 16, marginBottom: 20,
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{ color: colors.text, fontWeight: 600, fontSize: 14 }}>Level Progress</span>
-        <span style={{ color: colors.accent, fontSize: 13 }}>Level {currentLevel} / 5</span>
-      </div>
-      <div style={{ display: 'flex', gap: 6 }}>
-        {[1,2,3,4,5].map(l => {
-          const done   = l < currentLevel || (progress?.topicCompleted && l <= currentLevel)
-          const active = l === currentLevel && !progress?.topicCompleted
-          return (
-            <div key={l} style={{
-              flex: 1, height: 8, borderRadius: 4,
-              background: done ? '#10B981' : active ? colors.accent : colors.border,
-              transition: 'background 0.3s',
-              boxShadow: active ? `0 0 8px ${colors.accent}60` : 'none',
-            }} />
-          )
-        })}
-      </div>
-      <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
-        {['MCQ', 'Output', 'Fill', 'IDE', 'Code'].map((l, i) => (
-          <div key={l} style={{
-            flex: 1, textAlign: 'center', fontSize: 10,
-            color: i + 1 < currentLevel ? '#10B981' : i + 1 === currentLevel ? colors.accent : colors.textMuted,
-          }}>
-            {l}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-
   return (
     <div style={{ background: colors.bg, minHeight: '100vh', fontFamily: 'Poppins, sans-serif' }}>
       <Navbar />
@@ -294,8 +258,6 @@ export default function TopicPage() {
           </h1>
         </div>
 
-        <LevelProgress />
-
         {/* ── Dev Panel ── */}
         {user?.isDeveloper && (
           <div style={{
@@ -304,7 +266,7 @@ export default function TopicPage() {
             display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
           }}>
             <span style={{ color: '#f59e0b', fontSize: 11, fontWeight: 700 }}>⚙️ DEV</span>
-            <span style={{ color: '#f59e0b', fontSize: 11 }}>Jump to level:</span>
+            <span style={{ color: '#f59e0b', fontSize: 11 }}>Jump to format:</span>
             {[1,2,3,4,5].map(l => (
               <button key={l} onClick={() => { setDevLevel(l); setPhase('questions') }} style={{
                 background: currentLevel === l ? '#f59e0b' : 'transparent',
@@ -313,7 +275,7 @@ export default function TopicPage() {
                 padding: '2px 10px', fontSize: 11, fontWeight: 700,
                 cursor: 'pointer', fontFamily: 'Poppins, sans-serif',
               }}>
-                L{l}
+                {l}
               </button>
             ))}
             {devLevel && (
@@ -405,7 +367,7 @@ export default function TopicPage() {
                 }}
               >
                 <Play size={17} />
-                {isHindi ? `Level ${currentLevel} Shuru Karo` : `${t(effectiveLanguage, 'startLevel', 'Start Level')} ${currentLevel}`}
+                {isHindi ? 'Practice Shuru Karo' : 'Start Practice'}
               </button>
 
               {canAccessChallenge && (

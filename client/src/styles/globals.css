@@ -362,6 +362,10 @@ body,
   .home-grid {
     grid-template-columns: 1fr !important;
   }
+
+  .ali-insight-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 @media (max-width: 520px) {

@@ -592,8 +592,8 @@ export default function QuestionEngine({
       if (passed) {
         setFailCount(0);
         if (difficulty === 'HARD') {
-          // Level complete — server's shouldLevelUp will handle actual level advancement
-          setBatchMsg(correct ? '🔥 Batch passed on HARD! Level completing soon...' : 'Incorrect! Try Again.');
+          // Completion is still handled by the existing progression logic.
+          setBatchMsg(correct ? 'Promoted to Hard Difficulty' : 'Incorrect! Try Again.');
           await submitProgress(false, 0, {
             countAttempt: false,
             completeLevel: true,
@@ -607,7 +607,7 @@ export default function QuestionEngine({
         } else {
           const nextDiff = increaseDiff(difficulty);
           setDifficulty(nextDiff);
-          setBatchMsg(correct ? `✅ Batch passed! Difficulty increased to ${nextDiff}` : 'Not quite. Review the lesson and give it another try.');
+          setBatchMsg(nextDiff === 'MEDIUM' ? 'Promoted to Medium Difficulty' : 'Promoted to Hard Difficulty');
           if (correct) showToast(`Great! Questions get harder now → ${nextDiff}`, 'success');
           await submitProgress(false, 0, {
             countAttempt: false,
@@ -637,7 +637,7 @@ export default function QuestionEngine({
           setTheoryNeeded(true);
           triggeredTheory = true;
         } else {
-          setBatchMsg(`❌ Batch failed (${newFail}/3 fails). Same difficulty, new questions.`);
+          setBatchMsg('Difficulty remains the same');
           showToast(`Keep going — same difficulty (${difficulty})`, 'warning');
           await submitProgress(false, 0, {
             countAttempt: false,
@@ -665,7 +665,7 @@ export default function QuestionEngine({
       setFailCount(0);
       setQAttempted(0);
       setQNumInLevel(1);
-      setBatchMsg(`⚠️ Max ${maxQuestions} questions reached. Difficulty decreased to ${easierDiff}, starting fresh.`);
+      setBatchMsg('Difficulty remains the same');
       showToast(`Difficulty reduced to ${easierDiff}`, 'warning');
       await submitProgress(false, 0, {
         countAttempt: false,
@@ -766,6 +766,8 @@ export default function QuestionEngine({
 
   const hintTexts = [currentHints?.hint1, currentHints?.hint2, currentHints?.hint3].filter(Boolean);
   const diffColor = { EASY: '#10B981', MEDIUM: '#f59e0b', HARD: '#ef4444' };
+  const isPromotionMsg = batchMsg.startsWith('Promoted');
+  const isSameDifficultyMsg = batchMsg === 'Difficulty remains the same';
 
   // ── Theory overlay (full-screen) ─────────────────────────────────────────
   if (theoryNeeded) {
@@ -801,8 +803,7 @@ export default function QuestionEngine({
           <span style={{ background: `${diffColor[difficulty]}20`, color: diffColor[difficulty], borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700 }}>
             {difficulty}
           </span>
-          <span style={{ color: colors.accent, fontWeight: 700, fontSize: 14 }}>Level {level}/5</span>
-          <span style={{ color: colors.textMuted, fontSize: 13 }}>Q{qNumInLevel}</span>
+          <span style={{ color: colors.textMuted, fontSize: 13 }}>Question {qNumInLevel}</span>
           {speedMode && <Zap size={14} color="#fbbf24" />}
         </div>
 
@@ -844,18 +845,20 @@ export default function QuestionEngine({
           }} />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: colors.textMuted, marginTop: 2 }}>
-          <span>{qAttempted}/{maxQuestions} questions in level</span>
-          <span>{levelType}</span>
+          <span>{qAttempted}/{maxQuestions} checkpoint questions</span>
+          <span>Adaptive practice</span>
         </div>
       </div>
 
       {/* ── Batch result message ── */}
       {batchMsg && (
         <div style={{
-          background: batchMsg.startsWith('✅') ? '#10B98120' : batchMsg.startsWith('🔥') ? `${colors.accent}20` : '#f59e0b20',
-          border: `1px solid ${batchMsg.startsWith('✅') ? '#10B981' : batchMsg.startsWith('🔥') ? colors.accent : '#f59e0b'}40`,
-          borderRadius: 10, padding: '10px 14px', marginBottom: 12, fontSize: 13,
+          background: isPromotionMsg ? '#10B98122' : isSameDifficultyMsg ? '#f59e0b22' : '#f59e0b20',
+          border: `1px solid ${isPromotionMsg ? '#10B981' : '#f59e0b'}70`,
+          borderRadius: 12, padding: '12px 16px', marginBottom: 14, fontSize: 14,
           color: colors.text,
+          fontWeight: 700,
+          boxShadow: isPromotionMsg ? '0 10px 24px rgba(16,185,129,0.16)' : '0 10px 24px rgba(245,158,11,0.12)',
         }}>
           {batchMsg}
         </div>

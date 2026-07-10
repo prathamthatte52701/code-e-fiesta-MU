@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Home, Trophy, User, LogOut } from 'lucide-react'
+import { Brain, Home, Trophy, User, LogOut } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import { useAuth } from '../../context/AuthContext'
 import ThemeToggle from './ThemeToggle'
@@ -14,6 +14,7 @@ export default function Navbar() {
 
   const navItems = [
     { path: '/home',        icon: <Home size={18} />,   label: 'Home' },
+    ...(!user?.isGuest ? [{ path: '/adaptive-learning', icon: <Brain size={18} />, label: 'ALI' }] : []),
     { path: '/leaderboard', icon: <Trophy size={18} />, label: 'Leaderboard' },
     { path: '/profile',     icon: <User size={18} />,   label: 'Profile' },
   ]

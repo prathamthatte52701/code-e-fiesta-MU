@@ -16,6 +16,7 @@ import Home               from './pages/Home'
 import TopicPage          from './pages/TopicPage'
 import AIChallenge        from './pages/AIChallenge'
 import BossBattle         from './pages/BossBattle'
+import AdaptiveLearning   from './pages/AdaptiveLearning'
 import Leaderboard        from './pages/Leaderboard'
 import Profile            from './pages/Profile'
 import Avatar             from './pages/Avatar'
@@ -144,6 +145,7 @@ function AppRoutes() {
       <Route path="/topic/:topicId"     element={<PrivateRoute><TopicPage /></PrivateRoute>} />
       <Route path="/challenge/:topicId" element={<PrivateRoute><AIChallenge /></PrivateRoute>} />
       <Route path="/boss-ai/:topicId"   element={<PrivateRoute><BossBattle /></PrivateRoute>} />
+      <Route path="/adaptive-learning"  element={<AccountRoute message="Adaptive Learning Intelligence is available after login."><AdaptiveLearning /></AccountRoute>} />
       <Route path="/leaderboard"        element={<AccountRoute message="Leaderboards are available after login."><Leaderboard /></AccountRoute>} />
       <Route path="/profile"            element={<AccountRoute message="Create an account to save profile stats, badges, and leaderboard progress."><Profile /></AccountRoute>} />
       <Route path="/avatar"             element={<PrivateRoute><Avatar /></PrivateRoute>} />
