@@ -7,7 +7,6 @@ The app is designed for Indian learners and currently supports English, Hindi, T
 ## Live Project
 
 **https://osf-q6kb.onrender.com**
-(((((open developer mode for full project overview )))))
 
 ---
 
@@ -58,7 +57,7 @@ Main goals:
 
 - Normal login and signup with JWT authentication.
 - Guest Login for trying the platform without creating an account.
-- Developer Testing Mode for unlocked full-project testing.
+- Developer Testing Mode for unlocked full-project testing (disabled on the public demo deployment; available when running locally by uncommenting the route/handler).
 - Four languages: English, Hindi, Tamil, Malayalam.
 - Global language switcher across the app.
 - Text-to-speech support for selected language.
@@ -213,7 +212,7 @@ client/.env
 VITE_API_URL=http://localhost:5000/api
 ```
 
-If `VITE_API_URL` is not set, the frontend uses `http://localhost:5000/api` by default.
+If `VITE_API_URL` is not set, the frontend calls the API on its own origin (`window.location.origin`), falling back to `http://localhost:5000/api` only when running outside a browser. This lets the same build work locally (via the Vite dev proxy) and on Render (same-origin, no CORS) without extra config.
 
 Important:
 
@@ -385,7 +384,7 @@ Main pages:
 
 Route purpose:
 
-- `/login`: Normal login, guest login, and Developer Testing Mode.
+- `/login`: Normal login, guest login, and Developer Testing Mode (disabled on the public demo).
 - `/signup`: Create account.
 - `/onboarding`: Select language and hobby.
 - `/home`: Dashboard and learning map.
@@ -424,7 +423,7 @@ Route groups:
 
 Purpose:
 
-- `auth`: signup, login, current user, developer login.
+- `auth`: signup, login, current user (developer login route is commented out on the public demo — see Authentication Modes).
 - `topics`: topic list, theory generation, detailed theory generation.
 - `progress`: adaptive learning progress, weak spots, guest migration.
 - `groq`: AI question generation, explanations, IDE checks, AI challenge.
@@ -529,11 +528,9 @@ server/routes/challenge.js
 
 ### Developer Testing Mode
 
-- Available from the login page.
-- No developer credentials required.
-- Unlocks all routes and testing features.
-- Bypasses Daily Challenge cooldowns.
-- Does not require real learner progress.
+- Disabled on the public demo deployment (`osf-q6kb.onrender.com`) — the button is shown but inactive, and the backend route is commented out, since it bypasses auth entirely.
+- To re-enable for local testing: uncomment `handleDevLogin` + the button's `onClick` in `client/src/pages/Login.jsx`, `devLogin` in `client/src/context/AuthContext.jsx`, and the `/dev-login` route in `server/routes/auth.js`.
+- When enabled: no developer credentials required, unlocks all routes and testing features, bypasses Daily Challenge cooldowns, does not require real learner progress.
 
 ---
 
@@ -684,7 +681,7 @@ Manual verification checklist:
 - Signup works.
 - Login works.
 - Guest Login works.
-- Developer Testing Mode works.
+- Developer Testing Mode works (local only — disabled on the public demo).
 - Onboarding works.
 - Dashboard loads.
 - Language switch works without full-page reload.

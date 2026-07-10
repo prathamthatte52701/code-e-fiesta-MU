@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Mail, Lock, Eye, EyeOff, Settings } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, Settings, Mic } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
@@ -190,6 +190,18 @@ export default function Login() {
             }}>
               <Settings size={17} />
               Development Mode
+            </button>
+
+            <button type="button" disabled className="hud-btn-secondary" style={{
+              background: 'transparent', color: colors.textMuted,
+              border: `1px solid ${colors.border}`,
+              padding: '12px', fontSize: 15, fontWeight: 600,
+              cursor: 'not-allowed', fontFamily: 'Poppins, sans-serif',
+              opacity: 0.5,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}>
+              <Mic size={17} />
+              Voice Login (Coming Soon)
             </button>
           </form>
 

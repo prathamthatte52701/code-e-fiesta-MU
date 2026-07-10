@@ -137,7 +137,7 @@ function PublicLanguageSwitch() {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/"                   element={<Navigate to="/home" replace />} />
+      <Route path="/"                   element={<Navigate to="/login" replace />} />
       <Route path="/login"              element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/signup"             element={<PublicRoute><Signup /></PublicRoute>} />
       <Route path="/onboarding"         element={<PrivateRoute><Onboarding /></PrivateRoute>} />
