@@ -38,12 +38,25 @@ const startServer = async () => {
 
     app.get('/api/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV || 'development' }))
 
-    const clientDist = path.join(__dirname, '..', 'client', 'dist')
-    if (fs.existsSync(clientDist)) {
+    const clientDistCandidates = [
+      process.env.CLIENT_DIST_DIR && path.resolve(process.env.CLIENT_DIST_DIR),
+      path.join(__dirname, '..', 'client', 'dist'),
+      path.join(__dirname, '..', 'dist'),
+      path.join(__dirname, 'dist'),
+    ].filter(Boolean)
+
+    const clientDist = clientDistCandidates.find((candidate) => fs.existsSync(candidate))
+
+    if (clientDist) {
       app.use(express.static(clientDist))
       app.get(/^\/(?!api).*/, (req, res) => {
         res.sendFile(path.join(clientDist, 'index.html'))
       })
+    } else {
+      console.warn(
+        '[STATIC] Frontend build not found. Expected one of: ' +
+        clientDistCandidates.join(', ')
+      )
     }
 
     startCronJobs()

@@ -6,6 +6,8 @@ const Topic            = require('../models/Topic')
 const hobbyStemMap     = require('../constants/hobbyStemMap')
 const feedbackMessages = require('../constants/feedbackMessages')
 const pythonNotes      = require('../data/pythonNotes')
+const { isAnswerMatch } = require('../utils/answerMatch')
+const { runPython } = require('../utils/pistonExec')
 
 const router = express.Router()
 const optionalProtect = protect.optional
@@ -120,8 +122,26 @@ CODE: Clear STEM+hobby problem. Expected output must be exact — no trailing sp
 
 ABSOLUTE RULES:
 - NEVER repeat or resemble previous questions
-- All Python code must be syntactically correct
-- correctAnswer must exactly match Python output/accepted input
+- All Python code must be syntactically correct AND fully self-contained: every
+  variable used on the right-hand side of an expression (e.g. in "x = x + 10")
+  MUST have been explicitly assigned a value on an earlier line of the SAME
+  code shown to the student. NEVER reference a variable the student hasn't
+  seen initialized — that makes the question unanswerable and the code would
+  crash with NameError in real Python. If you need a running total, show the
+  starting assignment line first (e.g. "score = 0" before "score = score + 10").
+- correctAnswer must be mechanically derivable by tracing ONLY the exact code
+  shown — do not rely on any assumed/hidden starting value
+- correctAnswer must exactly match Python output/accepted input, AND must be
+  one of the "options" strings verbatim for MCQ (character-for-character)
+- The "code" field must contain COMPLETE, CONCRETE Python statements only —
+  never a placeholder comment like "# new code here" or "# write your code
+  here" standing in for a step the answer depends on. If the question talks
+  about "adding a line" or "incrementing", that exact line of code must
+  actually be written out in "code", not described in the question text and
+  left out of the code
+- The "code" field and the "question" text must describe the SAME code —
+  never show one version in the question wording and a different version
+  in "code"
 - Hints: hint1 = Python clue from knowledge base | hint2 = STEM+hobby analogy | hint3 = near-answer
 - ${langInstr}
 
@@ -138,13 +158,83 @@ Return ONLY this JSON — no markdown, no explanation:
   "hint3": "almost the answer"
 }`
 
-    const raw = await groqCall(groqQuestion, [{ role: 'user', content: prompt }], 700)
-    const clean = raw.replace(/```json|```/g, '').trim()
-    let question
-    try {
-      question = JSON.parse(clean)
-    } catch {
-      return res.status(200).json({ useFallback: true, reason: 'bad_json' })
+    // A tiny local fallback bank (client/src/data/fallbackQuestions.js) backs
+    // this up when the AI can't produce a valid question — but that bank only
+    // has ~3-4 items per topic/difficulty, so falling back to it often is
+    // exactly what was causing visible repeats. Retry the AI itself (with an
+    // escalating anti-repeat instruction) before ever giving up to fallback.
+    const normalizeForDup = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+    const prevList = Array.isArray(previousQuestions) ? previousQuestions : []
+    // Catches near-verbatim rewrites too (same phrase run, different filler
+    // words around it) — not just byte-identical repeats. A shared run of 6+
+    // consecutive words is a strong signal the "new" question is really the
+    // same one lightly reworded, without flagging genuinely different
+    // questions that merely share the hobby/topic scaffolding.
+    const hasLongCommonRun = (a, b, n = 6) => {
+      const wa = normalizeForDup(a).split(' ').filter(Boolean)
+      const wb = normalizeForDup(b).split(' ').filter(Boolean)
+      if (wa.length < n || wb.length < n) return false
+      const runsB = new Set()
+      for (let i = 0; i <= wb.length - n; i++) runsB.add(wb.slice(i, i + n).join(' '))
+      for (let i = 0; i <= wa.length - n; i++) if (runsB.has(wa.slice(i, i + n).join(' '))) return true
+      return false
+    }
+    const isDuplicateQuestion = (candidateText) => {
+      if (!candidateText) return false
+      const norm = normalizeForDup(candidateText)
+      return prevList.some(p => normalizeForDup(p) === norm || hasLongCommonRun(candidateText, p))
+    }
+
+    const MAX_ATTEMPTS = 3
+    let question = null
+    let lastReason = 'bad_json'
+    let lastDuplicateText = ''
+
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      const retryNote = attempt === 0 ? '' : `\n\nIMPORTANT: Your previous attempt repeated a question the student already saw: "${lastDuplicateText}". Generate a COMPLETELY DIFFERENT question — different scenario, different numbers, different wording. Do not resemble it at all.`
+
+      const raw = await groqCall(groqQuestion, [{ role: 'user', content: prompt + retryNote }], 700)
+      const clean = raw.replace(/```json|```/g, '').trim()
+      let candidate
+      try {
+        candidate = JSON.parse(clean)
+      } catch {
+        lastReason = 'bad_json'
+        continue
+      }
+
+      if (isDuplicateQuestion(candidate.question)) {
+        console.error('Question Generation Warning: duplicate question detected, retrying', { topicId, attempt })
+        lastDuplicateText = candidate.question
+        lastReason = 'duplicate_question'
+        continue
+      }
+
+      // The model writes `options` and `correctAnswer` in the same response but
+      // nothing forces them to agree — a reworded/re-punctuated correctAnswer
+      // that doesn't match any option verbatim was making genuinely correct
+      // picks grade as wrong. Validate (fuzzy) and repair before this ever
+      // reaches the client.
+      if (Array.isArray(candidate.options) && candidate.options.length > 0) {
+        const matchedOption = candidate.options.find(opt => isAnswerMatch(opt, candidate.correctAnswer))
+        if (matchedOption === undefined) {
+          console.error('Question Generation Warning: correctAnswer did not match any option', {
+            topicId, correctAnswer: candidate.correctAnswer, options: candidate.options,
+          })
+          lastReason = 'correct_answer_mismatch'
+          continue
+        }
+        // Snap to the option's exact text so client-side string comparison
+        // (and the green-highlight reveal) always lines up.
+        candidate.correctAnswer = matchedOption
+      }
+
+      question = candidate
+      break
+    }
+
+    if (!question) {
+      return res.status(200).json({ useFallback: true, reason: lastReason })
     }
 
     res.status(200).json({ question })
@@ -177,9 +267,9 @@ WHAT HAPPENED:
 - Student Answer: ${userAnswer} ✅ (Correct!)
 - Correct Answer: ${correctAnswer}
 
-STUDENT CONTEXT:
+STUDENT CONTEXT (for tone/flavor only — do NOT pull numbers or values from this):
 - Hobby: ${hobby}
-- Hobby Example: ${hobbyEx}
+- Hobby flavor reference (do not reuse its numbers): ${hobbyEx}
 - Language: ${lang}
 
 PYTHON KNOWLEDGE BASE:
@@ -189,18 +279,21 @@ Code patterns: ${notes?.code_examples?.[0] || 'None'}
 Write a short reinforcement with EXACTLY this structure:
 
 ✅ Why this is correct:
-(1-2 lines — explain WHY this answer works, not just that it's right. Be specific to their answer.)
+(1-2 lines — explain WHY this answer works using ONLY the exact numbers/code
+from the "Question" and "Correct Answer" above. Never invent a different
+example, different starting values, or numbers not shown in the Question.)
 
 💡 Deeper insight:
 (1 line — one extra fact about this concept they may not know, from knowledge base)
 
 🏏 Real world use:
-(1 line — connect to ${hobby}: how a ${hobby} enthusiast would use this in real Python code)
+(1 line — connect to ${hobby} by theme/setting only, no invented numbers: how a ${hobby} enthusiast would use this in real Python code)
 
 RULES:
 - Maximum 5 lines total
 - Celebrate their correct answer but focus on building deeper understanding
 - Even if they guessed, they now learn WHY it's correct
+- NEVER introduce a number, variable value, or scenario that isn't literally in the Question/Correct Answer above
 - ${langInstr2}
 - Return only the explanation — no JSON, no extra labels`
       : `You are a friendly Python tutor explaining a mistake.
@@ -212,9 +305,9 @@ WHAT HAPPENED:
 - Correct Answer: ${correctAnswer}
 - Question Type: ${questionType || 'Unknown'}
 
-STUDENT CONTEXT:
+STUDENT CONTEXT (for tone/flavor only — do NOT pull numbers or values from this):
 - Hobby: ${hobby}
-- Hobby Example: ${hobbyEx}
+- Hobby flavor reference (do not reuse its numbers): ${hobbyEx}
 - Language: ${lang}
 
 PYTHON KNOWLEDGE BASE:
@@ -227,20 +320,24 @@ Write explanation with EXACTLY this structure:
 (1 line — specific, not vague. Reference their actual wrong answer.)
 
 ✅ Correct approach:
-(1-2 lines — explain using hobby example from context above)
+(1-2 lines — trace through the EXACT code/numbers shown in the "Question"
+above, step by step, to reach the "Correct Answer" above. Never invent a
+different example, different starting values, or numbers not shown in the
+Question — that confuses the student instead of helping them.)
 (If code question: show the correct 1-2 lines)
 
 💡 Remember:
 (1 line — key fact from knowledge base relevant to this mistake)
 
 🔥 You've got this:
-(1 encouraging line — reference their hobby)
+(1 encouraging line — reference their hobby by theme only, no invented numbers)
 
 RULES:
 - Maximum 6 lines total
 - Never say 'you are wrong' or anything discouraging
 - Be specific — reference their actual answer
 - Use hobby naturally — do not force it
+- NEVER introduce a number, variable value, or scenario that isn't literally in the Question/Correct Answer above
 - ${langInstr2}
 - Return only the explanation — no JSON, no labels beyond the emoji headers`
 
@@ -344,7 +441,10 @@ RESPOND WITH:
 - OR the next interview question (one question only, no extra text)`
 
     const response = await groqCall(groqChallenge, [{ role: 'user', content: prompt }], 200)
-    const isComplete = response.trim().toUpperCase() === 'GREAT'
+    // Tolerate trailing punctuation/whitespace drift ("GREAT." / "GREAT!") —
+    // a strict === was treating minor formatting noise as an unsatisfied
+    // answer and forcing an unnecessary extra question.
+    const isComplete = response.trim().toUpperCase().replace(/[.!?]+$/, '') === 'GREAT'
     res.status(200).json({ question: response, isComplete })
 
   } catch (err) {

@@ -17,6 +17,7 @@ import { HelpCircle, ChevronRight, ArrowLeft, Trophy, Zap, BookOpen, CheckCircle
 import { getFallbackQuestion } from '../../data/fallbackQuestions';
 import { updateGuestProgress } from '../../utils/guestProgress';
 import { normalizeLanguage } from '../../utils/i18n';
+import { isAnswerMatch } from '../../utils/answerMatch';
 
 // Map backend questionType → frontend type key
 const TYPE_MAP = {
@@ -549,7 +550,7 @@ export default function QuestionEngine({
     const expectedAnswer = question.type === 'CODE'
       ? (question.expectedOutput || question.correctAnswer || '')
       : (question.correctAnswer || '');
-    const correct   = answer.trim().toLowerCase() === expectedAnswer.trim().toLowerCase();
+    const correct   = isAnswerMatch(answer, expectedAnswer);
     lastSubmittedCorrect.current = correct;
 
     setSelectedAnswer(answer);
@@ -942,6 +943,7 @@ export default function QuestionEngine({
         {/* Question types */}
         {(question.type === 'MCQ' || question.type === 'OUTPUT') && (
           <MCQQuestion
+            key={question.question}
             options={question.options || []}
             correctAnswer={question.correctAnswer}
             selectedAnswer={selectedAnswer}
@@ -951,6 +953,7 @@ export default function QuestionEngine({
         )}
         {question.type === 'FILL' && (
           <FillQuestion
+            key={question.question}
             question={question.question}
             correctAnswer={question.correctAnswer}
             answered={answered}
@@ -960,6 +963,7 @@ export default function QuestionEngine({
         )}
         {question.type === 'CODE' && (
           <IDEQuestion
+            key={question.question}
             problem={question.question}
             expectedOutput={question.expectedOutput || question.correctAnswer}
             answered={answered}

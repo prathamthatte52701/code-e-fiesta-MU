@@ -105,8 +105,16 @@ router.post('/update', protect, async (req, res) => {
     }
 
     const numLevel = Number(level)
+    // Require real answered-question evidence before honoring a client-sent
+    // completeLevel flag — otherwise a client could call this repeatedly
+    // with completeLevel:true and no real answers to "master" a topic
+    // instantly. questionsAttempted/correctAnswers only increment above via
+    // the countAttempt-gated real-answer path, so this can't be faked by
+    // just resending the same request.
+    const hasRealLevelEvidence = (levelData.questionsAttempted || 0) >= 5
+      && (levelData.correctAnswers || 0) / (levelData.questionsAttempted || 1) >= 0.5
     // Only check level-up if topic isn't already done and user is on this level
-    if (!progress.topicCompleted && completeLevel && progress.currentLevel === numLevel) {
+    if (!progress.topicCompleted && completeLevel && hasRealLevelEvidence && progress.currentLevel === numLevel) {
       levelData.completed = true
       if (numLevel < 5) {
         progress.currentLevel = numLevel + 1

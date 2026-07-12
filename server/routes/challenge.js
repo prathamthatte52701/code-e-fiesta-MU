@@ -6,12 +6,19 @@ const { checkAndAwardBadges } = require('../utils/badgeChecker')
 
 const router = express.Router()
 
+// Slots must be computed in the app's target timezone (IST), not the
+// server host's local timezone (Render runs UTC) — otherwise the slot
+// the client submits never matches the slot the server validates
+// against, daily-complete gets rejected, and completions never persist.
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000
+
 const getDailyChallengeSlotInfo = (date = new Date()) => {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
+  const ist = new Date(date.getTime() + IST_OFFSET_MS)
+  const year = ist.getUTCFullYear()
+  const month = String(ist.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(ist.getUTCDate()).padStart(2, '0')
   const dateKey = `${year}-${month}-${day}`
-  const slotIndex = Math.floor(date.getHours() / 6)
+  const slotIndex = Math.floor(ist.getUTCHours() / 6)
 
   return {
     dateKey,
@@ -43,8 +50,11 @@ router.get('/daily-status', protect, async (req, res) => {
 
 router.post('/daily-complete', protect, async (req, res) => {
   try {
-    const { bonusPoints = 50, slotId, dateKey, slotIndex, challengeId } = req.body
-    const points = Math.max(0, Number(bonusPoints) || 0)
+    const { slotId, dateKey, slotIndex, challengeId } = req.body
+    // Every daily challenge in the bank awards a fixed 50 points — trusting
+    // a client-supplied bonusPoints let anyone send an arbitrary value to
+    // inflate their leaderboard score.
+    const points = 50
     const user = await User.findById(req.user._id)
 
     if (!user) {
@@ -121,11 +131,15 @@ router.post('/complete', protect, async (req, res) => {
       return res.status(404).json({ message: 'Progress not found' })
     }
 
+    // Clamp to a sane range — a raw client-supplied score with no upper
+    // bound let anyone send an arbitrary value to inflate their points.
+    const safeScore = Math.max(0, Math.min(100, Number(score) || 100))
+
     progress.aiChallengeCompleted = true
-    progress.aiChallengeScore     = score || 100
+    progress.aiChallengeScore     = safeScore
     await progress.save()
 
-    const bonusPoints = score || 100
+    const bonusPoints = safeScore
     await User.findByIdAndUpdate(userId, {
       $inc: {
         totalPoints: bonusPoints,

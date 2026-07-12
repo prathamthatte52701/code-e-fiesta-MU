@@ -1,54 +1,28 @@
-import { Volume2, VolumeX } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { speak, stopSpeaking } from '../../utils/tts';
+import { Volume2 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
+import { showToast } from './Toast';
 
-export default function SpeakButton({ text, style, language }) {
-  const [speaking, setSpeaking] = useState(false);
+// Disabled: TTS playback is under development (buggy). Kept visible so the
+// control isn't a surprise removal, but it no longer speaks — see Toast.
+export default function SpeakButton({ style }) {
   const { colors } = useTheme();
-  const { user } = useAuth();
-  const activeSpeech = useRef(null);
-  const currentLanguage = language || user?.language || 'english';
 
-  useEffect(() => {
-    setSpeaking(false);
-    activeSpeech.current = null;
-  }, [text, currentLanguage]);
-
-  const handleSpeak = async () => {
-    if (speaking) {
-      stopSpeaking();
-      setSpeaking(false);
-      activeSpeech.current = null;
-    } else {
-      const utterance = await speak(text, currentLanguage, {
-        onStart: () => setSpeaking(true),
-        onEnd: () => {
-          setSpeaking(false);
-          activeSpeech.current = null;
-        },
-        onError: () => {
-          setSpeaking(false);
-          activeSpeech.current = null;
-        },
-      });
-      activeSpeech.current = utterance;
-      if (!utterance) setSpeaking(false);
-    }
+  const handleSpeak = () => {
+    showToast('This option will be available soon. This is under development.', 'warning');
   };
 
   return (
     <button
       onClick={handleSpeak}
-      title={speaking ? 'Stop speaking' : 'Read aloud'}
+      title="Read aloud (coming soon)"
       style={{
-        background: speaking ? colors.accent : colors.surface,
+        background: colors.surface,
         border: `1px solid ${colors.border}`,
         borderRadius: 8,
         padding: '6px 12px',
-        cursor: 'pointer',
-        color: speaking ? '#fff' : colors.text,
+        cursor: 'not-allowed',
+        color: colors.textMuted,
+        opacity: 0.6,
         display: 'flex',
         alignItems: 'center',
         gap: 6,
@@ -57,8 +31,8 @@ export default function SpeakButton({ text, style, language }) {
         ...style
       }}
     >
-      {speaking ? <VolumeX size={16} /> : <Volume2 size={16} />}
-      {speaking ? 'Stop' : 'Listen'}
+      <Volume2 size={16} />
+      Listen
     </button>
   );
 }

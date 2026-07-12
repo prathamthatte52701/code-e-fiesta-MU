@@ -19,6 +19,7 @@ import {
 import api from '../utils/api';
 import { getGuestProgress, saveGuestUser } from '../utils/guestProgress'
 import { normalizeLanguage, t } from '../utils/i18n'
+import { isAnswerMatch } from '../utils/answerMatch'
 
 const TEXT = {
   english: {
@@ -138,6 +139,14 @@ export default function DailyChallengePage() {
     setCompleted(!user?.isDeveloper && isDailyChallengeSlotCompleted(completedSlots, slotInfo));
   }, [completedSlots, slotInfo, user?.isDeveloper]);
 
+  // Auto-return to Home 60s after any submission (correct or incorrect),
+  // so the user isn't stuck on this screen if they don't tap Back to Home.
+  useEffect(() => {
+    if (!completed && !answerFeedback) return;
+    const timer = setTimeout(() => navigate('/home'), 60000);
+    return () => clearTimeout(timer);
+  }, [completed, answerFeedback, navigate]);
+
   const text = language === 'hindi' && challenge.questionHindi ? challenge.questionHindi : challenge.question;
   const options = language === 'hindi' && challenge.optionsHindi ? challenge.optionsHindi : challenge.options;
   const countdown = formatDailyChallengeTime(slotInfo.msUntilNextSlot);
@@ -177,8 +186,7 @@ export default function DailyChallengePage() {
     setAnswerFeedback(null);
     setAiExplanation('');
     const expected = challenge.type === 'CODE' ? challenge.expectedOutput : challenge.correctAnswer;
-    const normalize = (value) => String(value ?? '').trim().replace(/\r\n/g, '\n');
-    const isCorrect = normalize(submitted).toLowerCase() === normalize(expected).toLowerCase();
+    const isCorrect = isAnswerMatch(submitted, expected);
 
     if (isCorrect) {
       setCompleted(true);

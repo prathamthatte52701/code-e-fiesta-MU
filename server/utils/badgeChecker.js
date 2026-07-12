@@ -38,8 +38,12 @@ const BADGES = {
   },
   sharpshooter: {
     id: 'sharpshooter',
-    check: (user, allProgress, session) =>
-      (session?.consecutiveCorrect || 0) >= 10,
+    // Use the server-tracked Progress.consecutiveCorrect (updated only by
+    // real answer submissions in routes/progress.js) instead of trusting a
+    // client-supplied session.consecutiveCorrect value, which let anyone
+    // fake a streak with a single POST /api/badge/check call.
+    check: (user, allProgress) =>
+      allProgress.some(p => (p.consecutiveCorrect || 0) >= 10),
   },
   level_up: {
     id: 'level_up',

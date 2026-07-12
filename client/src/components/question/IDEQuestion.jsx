@@ -95,8 +95,10 @@ export default function IDEQuestion({ problem, expectedOutput, answered, onAnswe
       setOutput(result)
 
       if (isError) {
+        // A syntax/runtime error isn't a genuine answer attempt — let the
+        // student fix their code and run again instead of burning their
+        // one shot on a typo.
         setFeedback({ type: 'error', message: result })
-        onAnswer(result.trim())
         return
       }
 

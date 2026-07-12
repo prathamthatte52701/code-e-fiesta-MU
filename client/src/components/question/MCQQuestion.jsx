@@ -1,19 +1,22 @@
 import { useTheme } from '../../context/ThemeContext';
+import { isAnswerMatch } from '../../utils/answerMatch';
 
 export default function MCQQuestion({ options = [], correctAnswer, selectedAnswer, answered, onAnswer }) {
   const { colors } = useTheme();
 
+  const isCorrectOpt = (opt) => isAnswerMatch(opt, correctAnswer);
+
   const getBg = (opt) => {
     if (!answered) return colors.surface;
-    if (opt === correctAnswer) return `${colors.success}20`;
-    if (opt === selectedAnswer && opt !== correctAnswer) return `${colors.error}20`;
+    if (isCorrectOpt(opt)) return `${colors.success}20`;
+    if (opt === selectedAnswer && !isCorrectOpt(opt)) return `${colors.error}20`;
     return colors.surface;
   };
 
   const getBorder = (opt) => {
     if (!answered) return selectedAnswer === opt ? colors.accent : colors.border;
-    if (opt === correctAnswer) return colors.success;
-    if (opt === selectedAnswer && opt !== correctAnswer) return colors.error;
+    if (isCorrectOpt(opt)) return colors.success;
+    if (opt === selectedAnswer && !isCorrectOpt(opt)) return colors.error;
     return colors.border;
   };
 
@@ -35,12 +38,12 @@ export default function MCQQuestion({ options = [], correctAnswer, selectedAnswe
         >
           <span style={{
             width: 28, height: 28, borderRadius: '50%',
-            background: opt === correctAnswer && answered ? colors.success : colors.border,
+            background: isCorrectOpt(opt) && answered ? colors.success : colors.border,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: opt === correctAnswer && answered ? '#fff' : colors.textMuted,
+            color: isCorrectOpt(opt) && answered ? '#fff' : colors.textMuted,
             fontSize: 12, fontWeight: 700, flexShrink: 0
           }}>
-            {answered && opt === correctAnswer ? '✓' : String.fromCharCode(65 + i)}
+            {answered && isCorrectOpt(opt) ? '✓' : String.fromCharCode(65 + i)}
           </span>
           {opt}
         </button>

@@ -30,10 +30,14 @@ router.put('/update', protect, async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found' })
 
     Object.assign(user, update)
+    // The only legitimate client-driven use of pointsDelta today is the
+    // hint cost (-3). Clamp to a small negative range so this can't be used
+    // to inflate points arbitrarily (e.g. {"pointsDelta": 999999}).
     if (Number.isFinite(pointsDelta) && pointsDelta !== 0) {
-      user.totalPoints = Math.max(0, (user.totalPoints || 0) + pointsDelta)
-      user.weeklyPoints = Math.max(0, (user.weeklyPoints || 0) + pointsDelta)
-      user.dailyPoints = Math.max(0, (user.dailyPoints || 0) + pointsDelta)
+      const safeDelta = Math.max(-20, Math.min(0, pointsDelta))
+      user.totalPoints = Math.max(0, (user.totalPoints || 0) + safeDelta)
+      user.weeklyPoints = Math.max(0, (user.weeklyPoints || 0) + safeDelta)
+      user.dailyPoints = Math.max(0, (user.dailyPoints || 0) + safeDelta)
     }
 
     await user.save()

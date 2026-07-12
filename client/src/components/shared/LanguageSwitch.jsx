@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import api from '../../utils/api'
 import { stopSpeaking } from '../../utils/tts'
 import { LANGUAGES, getStoredLanguage, setStoredLanguage, normalizeLanguage } from '../../utils/i18n'
+import { showToast } from './Toast'
 
 const OPTIONS = [
   { id: 'english',   shortLabel: 'EN'  },
@@ -11,6 +12,8 @@ const OPTIONS = [
   { id: 'tamil',     shortLabel: 'த'   },
   { id: 'malayalam', shortLabel: 'മ'   },
 ]
+
+const COMING_SOON_LANGUAGES = new Set(['tamil', 'malayalam'])
 
 export default function LanguageSwitch({ floating = false, style = {} }) {
   const { colors } = useTheme()
@@ -20,6 +23,10 @@ export default function LanguageSwitch({ floating = false, style = {} }) {
   const currentLanguage = normalizeLanguage(user?.language || getStoredLanguage())
 
   const switchLanguage = async (nextLanguage) => {
+    if (COMING_SOON_LANGUAGES.has(nextLanguage)) {
+      showToast('This language will be available soon.', 'warning')
+      return
+    }
     if (saving || nextLanguage === currentLanguage) return
     setSaving(true)
     stopSpeaking()

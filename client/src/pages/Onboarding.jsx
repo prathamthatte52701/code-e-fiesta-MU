@@ -6,6 +6,9 @@ import api from '../utils/api'
 import ThemeToggle from '../components/shared/ThemeToggle'
 import { HOBBIES } from '../utils/constants'
 import { LANGUAGES, normalizeLanguage, setStoredLanguage } from '../utils/i18n'
+import { showToast } from '../components/shared/Toast'
+
+const COMING_SOON_LANGUAGES = new Set(['tamil', 'malayalam'])
 
 const TEXT = {
   english: {
@@ -96,6 +99,10 @@ export default function Onboarding() {
   }
 
   const selectLanguage = (nextLanguage) => {
+    if (COMING_SOON_LANGUAGES.has(nextLanguage)) {
+      showToast('This language will be available soon.', 'warning')
+      return
+    }
     const safeLanguage = setStoredLanguage(nextLanguage)
     setLanguage(safeLanguage)
     savePreference({ language: safeLanguage })

@@ -439,10 +439,10 @@ const bank = {
         question: 'How many times does the loop body run?\n\nfor i in range(10):\n    if i > 4:\n        break',
         code: 'for i in range(10):\n    if i > 4:\n        break',
         options: ['5', '4', '6', '10'],
-        correctAnswer: '5',
-        hint1: 'Loop runs for i = 0, 1, 2, 3, 4 before break at i=5',
-        hint2: 'i > 4 becomes True when i=5; break fires',
-        hint3: '0, 1, 2, 3, 4 → 5 iterations',
+        correctAnswer: '6',
+        hint1: 'The loop body is the if-check itself, which runs once per iteration up to and including i=5',
+        hint2: 'i > 4 becomes True when i=5, and break fires only after that check runs',
+        hint3: '0, 1, 2, 3, 4, 5 → the body runs 6 times before the loop exits',
       },
     ],
     HARD: [
@@ -1200,38 +1200,51 @@ const usedPerTopic = {}
 /**
  * Get a fallback question from the local bank.
  * Rotates through questions to avoid repeats.
+ *
+ * Each individual (topic, difficulty) pool only has ~3-4 questions, which
+ * repeats within minutes if the AI keeps failing and this fallback keeps
+ * getting hit. Pool candidates from the requested difficulty FIRST, then
+ * widen to the topic's other difficulties before ever repeating a question —
+ * this triples the effective unique pool per topic (~10-12 items) using only
+ * already-existing, already-correct content, no new content needed.
  */
 export const getFallbackQuestion = (topicId, difficulty = 'EASY', preferredType = null) => {
   const safeId   = bank[topicId] ? topicId : 'variables'
   const safeDiff = bank[safeId][difficulty] ? difficulty : 'EASY'
-  const pool     = bank[safeId][safeDiff]
+  const allDifficulties = Object.keys(bank[safeId])
+  const orderedDiffs = [safeDiff, ...allDifficulties.filter(d => d !== safeDiff)]
 
-  const key = `${safeId}-${safeDiff}`
-  if (!usedPerTopic[key]) usedPerTopic[key] = new Set()
-  const used = usedPerTopic[key]
+  // Track usage per TOPIC (not per topic+difficulty) so widening the search
+  // to other difficulties actually avoids repeats instead of just relabeling them.
+  if (!usedPerTopic[safeId]) usedPerTopic[safeId] = new Set()
+  const used = usedPerTopic[safeId]
+
+  const allEntries = []
+  for (const diff of orderedDiffs) {
+    bank[safeId][diff].forEach((q, i) => allEntries.push({ q, key: `${diff}-${i}` }))
+  }
 
   // Prefer the requested type if available
   let candidates = preferredType
-    ? pool.filter((q, i) => q.questionType === preferredType && !used.has(i))
-    : pool.filter((_, i) => !used.has(i))
+    ? allEntries.filter(e => e.q.questionType === preferredType && !used.has(e.key))
+    : allEntries.filter(e => !used.has(e.key))
 
   // Reset if all used
   if (candidates.length === 0) {
     used.clear()
     candidates = preferredType
-      ? pool.filter(q => q.questionType === preferredType)
-      : [...pool]
+      ? allEntries.filter(e => e.q.questionType === preferredType)
+      : allEntries
   }
 
   // Fallback to any type if preferred type not found
-  if (candidates.length === 0) candidates = [...pool]
+  if (candidates.length === 0) candidates = allEntries
 
   const idx = Math.floor(Math.random() * candidates.length)
-  const q   = candidates[idx]
-  const poolIdx = pool.indexOf(q)
-  used.add(poolIdx)
+  const chosen = candidates[idx]
+  used.add(chosen.key)
 
-  return { ...q }
+  return { ...chosen.q }
 }
 
 export default bank
