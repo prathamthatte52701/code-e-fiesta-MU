@@ -200,6 +200,9 @@ GROQ_KEY_1=your_theory_key
 GROQ_KEY_2=your_question_key
 GROQ_KEY_3=your_answer_feedback_key
 GROQ_KEY_4=your_ai_challenge_key
+
+# Developer Testing Mode (bypasses auth) - keep false on public deployments
+ENABLE_DEV_LOGIN=false
 ```
 
 Optional frontend environment:
@@ -528,8 +531,9 @@ server/routes/challenge.js
 
 ### Developer Testing Mode
 
-- Disabled on the public demo deployment (`osf-q6kb.onrender.com`) — the button is shown but inactive, and the backend route is commented out, since it bypasses auth entirely.
-- To re-enable for local testing: uncomment `handleDevLogin` + the button's `onClick` in `client/src/pages/Login.jsx`, `devLogin` in `client/src/context/AuthContext.jsx`, and the `/dev-login` route in `server/routes/auth.js`.
+- Controlled by the `ENABLE_DEV_LOGIN=true` server environment variable. Default is off: with no variable set, `POST /api/auth/dev-login` returns 403 and the login page shows "Development Mode is disabled on this deployment."
+- Keep it OFF on public deployments, because it bypasses authentication entirely.
+- To turn it on locally: add `ENABLE_DEV_LOGIN=true` to `server/.env` and restart the server. Remove it (or set `false`) and restart to turn it off.
 - When enabled: no developer credentials required, unlocks all routes and testing features, bypasses Daily Challenge cooldowns, does not require real learner progress.
 
 ---

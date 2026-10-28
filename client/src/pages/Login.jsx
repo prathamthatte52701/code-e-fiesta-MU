@@ -18,7 +18,7 @@ const getAuthErrorMessage = (err) => {
 
 export default function Login() {
   const { colors } = useTheme()
-  const { login, /* devLogin, */ startGuest, user } = useAuth()
+  const { login, devLogin, startGuest, user } = useAuth()
   const navigate = useNavigate()
 
   const [form, setForm]       = useState({ email: '', password: '' })
@@ -77,20 +77,19 @@ export default function Login() {
     navigate('/home')
   }
 
-  // Disabled for public/demo deployment. Left in place, commented out, on purpose.
-  // const handleDevLogin = async () => {
-  //   setDevLoading(true)
-  //   setServerError('')
-  //   setInfoMessage('')
-  //   try {
-  //     const user = await devLogin()
-  //     navigate(user.onboardingComplete ? '/home' : '/onboarding')
-  //   } catch (err) {
-  //     setServerError(getAuthErrorMessage(err))
-  //   } finally {
-  //     setDevLoading(false)
-  //   }
-  // }
+  const handleDevLogin = async () => {
+    setDevLoading(true)
+    setServerError('')
+    setInfoMessage('')
+    try {
+      const user = await devLogin()
+      navigate(user.onboardingComplete ? '/home' : '/onboarding')
+    } catch (err) {
+      setServerError(getAuthErrorMessage(err))
+    } finally {
+      setDevLoading(false)
+    }
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: colors.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Poppins, sans-serif' }}>
@@ -181,11 +180,11 @@ export default function Login() {
               {t(user?.language, 'continueAsGuest', 'Continue as Guest')} →
             </button>
 
-            <button type="button" /* onClick={handleDevLogin} */ disabled className="hud-btn-gold" style={{
+            <button type="button" onClick={handleDevLogin} disabled={devLoading} className="hud-btn-gold" style={{
               background: '#f59e0b', color: '#111827',
               padding: '12px', fontSize: 15, fontWeight: 700,
-              cursor: 'not-allowed', fontFamily: 'Poppins, sans-serif',
-              opacity: 0.5,
+              cursor: devLoading ? 'wait' : 'pointer', fontFamily: 'Poppins, sans-serif',
+              opacity: devLoading ? 0.7 : 1,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             }}>
               <Settings size={17} />

@@ -95,16 +95,15 @@ export const AuthProvider = ({ children }) => {
     return loginUser
   }
 
-  // Disabled for public/demo deployment. Left in place, commented out, on purpose.
-  // const devLogin = async () => {
-  //   const res = await api.post('/auth/dev-login')
-  //   localStorage.setItem('token', res.data.token)
-  //   localStorage.removeItem(GUEST_MODE_KEY)
-  //   setUser(res.data.user)
-  //   setGuestMigrationAvailable(hasGuestProgress())
-  //   setStoredLanguage(res.data.user.language || 'english', { emit: false })
-  //   return res.data.user
-  // }
+  const devLogin = async () => {
+    const res = await api.post('/auth/dev-login')
+    localStorage.setItem('token', res.data.token)
+    localStorage.removeItem(GUEST_MODE_KEY)
+    setUser(res.data.user)
+    setGuestMigrationAvailable(hasGuestProgress())
+    setStoredLanguage(res.data.user.language || 'english', { emit: false })
+    return res.data.user
+  }
 
   const logout = () => {
     localStorage.removeItem('token')
@@ -154,7 +153,7 @@ export const AuthProvider = ({ children }) => {
       user,
       loading,
       login,
-      // devLogin, // disabled for public/demo deployment
+      devLogin,
       signup,
       logout,
       startGuest,

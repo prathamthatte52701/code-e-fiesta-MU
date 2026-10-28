@@ -82,42 +82,46 @@ router.post('/signup', async (req, res) => {
 })
 
 // ─── POST /api/auth/dev-login — open Development Mode, no credentials ─────────
-// Disabled for public/demo deployment. Left in place, commented out, on purpose.
-// router.post('/dev-login', async (req, res) => {
-//   try {
-//     const email = 'development@stemlearn.local'
-//     const hashedPassword = await bcrypt.hash(`dev-${Date.now()}-${Math.random()}`, 12)
-//
-//     const user = await User.findOneAndUpdate(
-//       { email },
-//       {
-//         $set: {
-//           name: 'Development Mode',
-//           password: hashedPassword,
-//           isDeveloper: true,
-//           onboardingComplete: true,
-//           language: 'english',
-//           hobby: 'cricket',
-//         },
-//         $setOnInsert: {
-//           streak: 0,
-//           totalPoints: 0,
-//           weeklyPoints: 0,
-//           dailyPoints: 0,
-//           badges: [],
-//           speedModeEnabled: false,
-//         },
-//       },
-//       { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
-//     )
-//
-//     const token = generateToken(user._id)
-//     res.status(200).json({ token, user: formatAuthUser(user) })
-//   } catch (err) {
-//     console.error('Dev Login Error:', err)
-//     res.status(500).json({ message: 'Could not open Development Mode' })
-//   }
-// })
+// Only works when ENABLE_DEV_LOGIN=true on the server.
+router.post('/dev-login', async (req, res) => {
+  if (process.env.ENABLE_DEV_LOGIN !== 'true') {
+    return res.status(403).json({ message: 'Development Mode is disabled on this deployment.' })
+  }
+
+  try {
+    const email = 'development@stemlearn.local'
+    const hashedPassword = await bcrypt.hash(`dev-${Date.now()}-${Math.random()}`, 12)
+
+    const user = await User.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          name: 'Development Mode',
+          password: hashedPassword,
+          isDeveloper: true,
+          onboardingComplete: true,
+          language: 'english',
+          hobby: 'cricket',
+        },
+        $setOnInsert: {
+          streak: 0,
+          totalPoints: 0,
+          weeklyPoints: 0,
+          dailyPoints: 0,
+          badges: [],
+          speedModeEnabled: false,
+        },
+      },
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
+    )
+
+    const token = generateToken(user._id)
+    res.status(200).json({ token, user: formatAuthUser(user) })
+  } catch (err) {
+    console.error('Dev Login Error:', err)
+    res.status(500).json({ message: 'Could not open Development Mode' })
+  }
+})
 
 // ─── POST /api/auth/login ─────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
