@@ -1,17 +1,46 @@
+<div align="center">
+
+<img src="client/public/logo.png" alt="ZenithLearn logo" width="96" />
+
 # ZenithLearn
 
-ZenithLearn is a MERN-stack, multilingual Python learning platform built for beginner-friendly STEM education. It combines adaptive practice, AI-generated explanations, daily challenges, gamified progression, leaderboards, avatars, guest access, developer testing mode, and an AI boss battle experience.
+### A bilingual, AI-adaptive Python learning platform — built to find your weak spots and fix them.
 
-The app is designed for Indian learners and currently supports English, Hindi, Tamil, and Malayalam while keeping Python syntax, keywords, variable names, and code blocks in English.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-osf--q6kb.onrender.com-7C3AED?style=for-the-badge)](https://osf-q6kb.onrender.com)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com)
+[![Groq](https://img.shields.io/badge/AI-Groq%20LLM-F55036?style=flat-square)](https://groq.com)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
+[![License](https://img.shields.io/badge/License-Hackathon%20Project-lightgrey?style=flat-square)](#)
+
+</div>
+
+ZenithLearn is a MERN-stack, multilingual Python learning platform built for beginner-friendly STEM education. It combines a **concept-level gap analyzer**, AI-generated explanations, daily challenges, gamified progression, leaderboards, avatars, guest access, a developer testing mode, and an AI boss battle experience — all driven by real answer data, not static content.
+
+The app is designed for Indian learners and currently supports **English, Hindi, Tamil, and Malayalam**, while keeping Python syntax, keywords, variable names, and code blocks in English.
 
 ## Live Project
 
-**https://osf-q6kb.onrender.com**
+**[osf-q6kb.onrender.com](https://osf-q6kb.onrender.com)** — click "Development Mode" on the login page to explore instantly, no signup needed.
+
+---
+
+## Screenshots
+
+<table>
+<tr>
+<td width="33%"><img src="docs/screenshots/login.jpg" alt="Login screen" /><br/><sub align="center">Login — guest, account, or one-click Dev Mode</sub></td>
+<td width="33%"><img src="docs/screenshots/home.jpg" alt="Personalized learning path on the dashboard" /><br/><sub align="center">Dashboard — personalized path from real gap data</sub></td>
+<td width="33%"><img src="docs/screenshots/boss-battle.jpg" alt="Boss Battle game mode" /><br/><sub align="center">Boss Battle — gamified topic mastery check</sub></td>
+</tr>
+</table>
 
 ---
 
 ## Table of Contents
 
+- [Screenshots](#screenshots)
 - [Project Overview](#project-overview)
 - [Core Features](#core-features)
 - [Tech Stack](#tech-stack)

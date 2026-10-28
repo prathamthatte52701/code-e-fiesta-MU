@@ -180,6 +180,12 @@ export default function Login() {
               {t(user?.language, 'continueAsGuest', 'Continue as Guest')} →
             </button>
 
+            <p style={{
+              color: '#f59e0b', fontSize: 11, fontWeight: 600, textAlign: 'center',
+              margin: '4px 0 0',
+            }}>
+              👉 Use Development Mode to test the app (MVP demo)
+            </p>
             <button type="button" onClick={handleDevLogin} disabled={devLoading} className="hud-btn-gold" style={{
               background: '#f59e0b', color: '#111827',
               padding: '12px', fontSize: 15, fontWeight: 700,
