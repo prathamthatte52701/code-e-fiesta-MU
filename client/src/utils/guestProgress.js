@@ -1,4 +1,6 @@
 import { getStoredLanguage, setStoredLanguage, normalizeLanguage } from './i18n'
+import { resolveTag, toKey } from './conceptTags'
+import { updateMastery } from './mastery'
 
 export const GUEST_USER_ID = 'guest'
 export const GUEST_MODE_KEY = 'stemlearn:guestMode'
@@ -138,6 +140,8 @@ export const updateGuestProgress = (payload) => {
     correct,
     timeTaken = 0,
     concept,
+    conceptTag,
+    difficulty,
     questionText,
     userAnswer,
     correctAnswer,
@@ -166,6 +170,7 @@ export const updateGuestProgress = (payload) => {
     levelData.last3Answers = [...(levelData.last3Answers || []), Boolean(correct)].slice(-3)
     levelData.last3Times = [...(levelData.last3Times || []), Number(timeTaken) || 0].slice(-3)
     progress.consecutiveCorrect = correct ? (progress.consecutiveCorrect || 0) + 1 : 0
+    progress.conceptMastery = updateMastery(progress.conceptMastery || [], toKey(topicId, resolveTag(topicId, conceptTag)), { correct: Boolean(correct), difficulty })
   }
 
   if (currentBatchCorrect !== undefined) levelData.currentBatchCorrect = currentBatchCorrect
@@ -179,7 +184,7 @@ export const updateGuestProgress = (payload) => {
   if (countAttempt && !resetLevelStats && !correct && concept) {
     progress.wrongAnswers = [
       ...(progress.wrongAnswers || []),
-      { concept, questionText: questionText || '', userAnswer: userAnswer || '', correctAnswer: correctAnswer || '', level, timestamp: new Date().toISOString() },
+      { concept, conceptTag: resolveTag(topicId, conceptTag), questionText: questionText || '', userAnswer: userAnswer || '', correctAnswer: correctAnswer || '', level, timestamp: new Date().toISOString() },
     ].slice(-50)
   }
 

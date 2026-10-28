@@ -18,6 +18,7 @@ import { getFallbackQuestion } from '../../data/fallbackQuestions';
 import { updateGuestProgress } from '../../utils/guestProgress';
 import { normalizeLanguage } from '../../utils/i18n';
 import { isAnswerMatch } from '../../utils/answerMatch';
+import { resolveTag } from '../../utils/conceptTags';
 
 // Map backend questionType → frontend type key
 const TYPE_MAP = {
@@ -286,6 +287,7 @@ export default function QuestionEngine({
   const startTime  = useRef(Date.now());
   const prevQ      = useRef('');
   const prevQuestions = useRef([]);
+  const recentTags = useRef([]);
   const lastSubmittedCorrect = useRef(false);
   const mountedRef = useRef(true);
 
@@ -361,6 +363,7 @@ export default function QuestionEngine({
         questionsAttempted: qAttempted,
         previousQuestion: prevQ.current,
         previousQuestions: prevQuestions.current,
+        recentTags: recentTags.current,
       });
 
       // Server signals fallback (rate limit / parse fail) — use local bank
@@ -372,6 +375,7 @@ export default function QuestionEngine({
       const mapped = { ...raw, type: TYPE_MAP[raw.questionType] || 'MCQ' };
       prevQ.current = raw.question;
       prevQuestions.current = [...prevQuestions.current, raw.question].slice(-50);
+      recentTags.current = [...recentTags.current, resolveTag(topicId, raw.conceptTag)].slice(-3);
       setQuestion(mapped);
     } catch {
       // Use local fallback bank — invisible to judges during live demo
@@ -381,6 +385,7 @@ export default function QuestionEngine({
       const mapped = { ...fb, type: TYPE_MAP[fb.questionType] || 'MCQ' };
       prevQ.current = fb.question;
       prevQuestions.current = [...prevQuestions.current, fb.question].slice(-50);
+      recentTags.current = [...recentTags.current, resolveTag(topicId, fb.conceptTag)].slice(-3);
       setQuestion(mapped);
     } finally {
       setLoading(false);
@@ -402,6 +407,8 @@ export default function QuestionEngine({
         timeTaken,
         speedMode: speedMode || false,
         concept: topicId,
+        conceptTag: resolveTag(topicId, question?.conceptTag),
+        difficulty,
         questionText: question?.question || '',
         userAnswer: selectedAnswer || '',
         correctAnswer: question?.type === 'CODE'
@@ -462,6 +469,8 @@ export default function QuestionEngine({
         timeTaken,
         speedMode: speedMode || false,
         concept: topicId,
+        conceptTag: resolveTag(topicId, question?.conceptTag),
+        difficulty,
         questionText: question?.question || '',
         userAnswer: selectedAnswer || '',
         correctAnswer: question?.type === 'CODE'

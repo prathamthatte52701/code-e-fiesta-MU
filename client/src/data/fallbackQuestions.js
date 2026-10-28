@@ -7,6 +7,7 @@ const bank = {
     EASY: [
       {
         questionType: 'MCQ',
+        conceptTag: 'assignment',
         question: 'A sports scientist stores a player\'s score:\n\nscore = 150\n\nWhat does the variable "score" hold?',
         code: 'score = 150',
         options: ['The number 150', 'The word "score"', 'Nothing — it is just a name', 'A list of scores'],
@@ -17,6 +18,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'naming-rules',
         question: 'Which of the following is a valid Python variable name?',
         code: null,
         options: ['2runs', 'player_speed', 'player-speed', 'class'],
@@ -27,6 +29,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'naming-rules',
         question: 'A data analyst stores the number of wickets taken:\n\n___ = 5\n\nFill in the blank with a valid variable name.',
         code: '___ = 5',
         options: null,
@@ -37,6 +40,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'assignment',
         question: 'What will this code print?\n\nx = 10\nx = 20\nprint(x)',
         code: 'x = 10\nx = 20\nprint(x)',
         options: ['10', '20', '10 20', 'Error'],
@@ -49,6 +53,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'assignment',
         question: 'A scientist writes:\n\na = 5\nb = a\na = 99\nprint(b)\n\nWhat is printed?',
         code: 'a = 5\nb = a\na = 99\nprint(b)',
         options: ['5', '99', 'a', 'Error'],
@@ -59,6 +64,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'swap-unpack',
         question: 'Swap two variables without a third variable:\n\nruns = 85\nballs = 60\nruns, balls = ___, ___\n\nFill in the blank to swap their values.',
         code: 'runs = 85\nballs = 60\nruns, balls = ___, ___',
         options: null,
@@ -69,6 +75,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'augmented-assignment',
         question: 'An engineer runs:\n\nspeed = 140\nspeed += 10\nprint(speed)\n\nWhat is printed?',
         code: 'speed = 140\nspeed += 10\nprint(speed)',
         options: ['140', '10', '150', '14010'],
@@ -79,6 +86,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'naming-rules',
         question: 'A data engineer stores ball speed as a decimal:\n\nball_speed = ___\n\nFill in a float value representing 140.5 km/h.',
         code: 'ball_speed = ___',
         options: null,
@@ -91,6 +99,7 @@ const bank = {
     HARD: [
       {
         questionType: 'MCQ',
+        conceptTag: 'multiple-assignment',
         question: 'What will this code print?\n\nx = y = z = 0\nx += 1\ny += 2\nprint(z)',
         code: 'x = y = z = 0\nx += 1\ny += 2\nprint(z)',
         options: ['0', '1', '2', '3'],
@@ -101,6 +110,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'assignment',
         question: 'A scientist stores a measurement:\n\ntemp = 36.5\ntemp = "fever"\nprint(type(temp))\n\nWhat is printed?',
         code: 'temp = 36.5\ntemp = "fever"\nprint(type(temp))',
         options: ["<class 'float'>", "<class 'str'>", 'TypeError', "<class 'int'>"],
@@ -126,6 +136,7 @@ const bank = {
     EASY: [
       {
         questionType: 'MCQ',
+        conceptTag: 'int-float',
         question: 'What is the data type of the value 3.14?',
         code: 'x = 3.14',
         options: ['int', 'float', 'str', 'bool'],
@@ -136,6 +147,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'bool',
         question: 'What is printed?\n\nprint(type(True))',
         code: 'print(type(True))',
         options: ["<class 'bool'>", "<class 'str'>", "<class 'int'>", "<class 'NoneType'>"],
@@ -146,6 +158,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'type-conversion',
         question: 'Store the number of goals as a whole number:\n\ngoals = ___\n\nFill in the data type keyword to convert the string "5" to an integer.',
         code: 'goals = ___("5")',
         options: null,
@@ -156,6 +169,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'str',
         question: 'Which data type stores the player\'s name "Rohit"?',
         code: 'player = "Rohit"',
         options: ['int', 'float', 'str', 'bool'],
@@ -168,6 +182,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'type-conversion',
         question: 'What is printed?\n\nx = int(3.9)\nprint(x)',
         code: 'x = int(3.9)\nprint(x)',
         options: ['4', '3', '3.9', 'Error'],
@@ -178,6 +193,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'bool',
         question: 'What does print(type(5 == 5)) output?',
         code: 'print(type(5 == 5))',
         options: ["<class 'int'>", "<class 'bool'>", "<class 'str'>", 'True'],
@@ -188,6 +204,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'type-conversion',
         question: 'Convert the string speed to float:\n\nspeed_str = "140.5"\nspeed = ___(speed_str)\n\nFill in the conversion function.',
         code: 'speed_str = "140.5"\nspeed = ___(speed_str)',
         options: null,
@@ -198,6 +215,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'type-conversion',
         question: 'Which line will raise a ValueError?',
         code: null,
         options: ['int("42")', 'float("3.14")', 'int("abc")', 'str(100)'],
@@ -210,6 +228,7 @@ const bank = {
     HARD: [
       {
         questionType: 'MCQ',
+        conceptTag: 'type-conversion',
         question: 'What is printed?\n\nx = "100"\ny = int(x) + 50\nprint(y)',
         code: 'x = "100"\ny = int(x) + 50\nprint(y)',
         options: ['10050', '150', 'Error', '"150"'],
@@ -220,6 +239,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'int-float',
         question: 'A sensor records temperature. What type should be used for maximum precision?\n\ntemp = 36.678901',
         code: 'temp = 36.678901',
         options: ['int', 'str', 'float', 'bool'],
@@ -230,6 +250,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'type-conversion',
         question: 'An engineer needs to check if a measurement is exactly an integer:\n\nvalue = 98.0\nresult = value == ___(value)\nprint(result)',
         code: 'value = 98.0\nresult = value == ___(value)\nprint(result)',
         options: null,
@@ -245,6 +266,7 @@ const bank = {
     EASY: [
       {
         questionType: 'MCQ',
+        conceptTag: 'comparison-ops',
         question: 'What is printed?\n\nscore = 80\nif score >= 50:\n    print("Pass")',
         code: 'score = 80\nif score >= 50:\n    print("Pass")',
         options: ['Pass', 'Fail', 'Nothing', 'Error'],
@@ -255,6 +277,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'if-else',
         question: 'Which keyword handles the "otherwise" case in Python?',
         code: null,
         options: ['elif', 'else', 'except', 'otherwise'],
@@ -265,6 +288,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'comparison-ops',
         question: 'Complete the condition to check if speed exceeds the limit:\n\nspeed = 145\nif speed ___ 140:\n    print("Too fast!")',
         code: 'speed = 145\nif speed ___ 140:\n    print("Too fast!")',
         options: null,
@@ -275,6 +299,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'if-else',
         question: 'What is printed?\n\nx = 10\nif x > 20:\n    print("High")\nelse:\n    print("Low")',
         code: 'x = 10\nif x > 20:\n    print("High")\nelse:\n    print("Low")',
         options: ['High', 'Low', 'High Low', 'Error'],
@@ -287,6 +312,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'elif-chain',
         question: 'What is printed?\n\ntemp = 38\nif temp > 39:\n    print("High fever")\nelif temp > 37:\n    print("Mild fever")\nelse:\n    print("Normal")',
         code: 'temp = 38\nif temp > 39:\n    print("High fever")\nelif temp > 37:\n    print("Mild fever")\nelse:\n    print("Normal")',
         options: ['High fever', 'Mild fever', 'Normal', 'Error'],
@@ -297,6 +323,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'logical-ops',
         question: 'Check two conditions together — player is active AND score is above 50:\n\nactive = True\nscore = 75\nif active ___ score > 50:\n    print("Eligible")',
         code: 'active = True\nscore = 75\nif active ___ score > 50:\n    print("Eligible")',
         options: null,
@@ -307,6 +334,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'logical-ops',
         question: 'What is printed?\n\na = 5\nb = 10\nif a > 3 and b < 5:\n    print("A")\nelif a > 3 or b < 5:\n    print("B")\nelse:\n    print("C")',
         code: 'a = 5\nb = 10\nif a > 3 and b < 5:\n    print("A")\nelif a > 3 or b < 5:\n    print("B")\nelse:\n    print("C")',
         options: ['A', 'B', 'C', 'Error'],
@@ -317,6 +345,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'truthiness',
         question: 'A physics sensor checks velocity:\n\nv = 0\nif not v:\n    print("Stationary")\n\nWhat is printed?',
         code: 'v = 0\nif not v:\n    print("Stationary")',
         options: ['Stationary', 'Nothing', 'False', 'Error'],
@@ -329,6 +358,7 @@ const bank = {
     HARD: [
       {
         questionType: 'MCQ',
+        conceptTag: 'if-else',
         question: 'What is printed?\n\nx = 15\nresult = "High" if x > 10 else "Low"\nprint(result)',
         code: 'x = 15\nresult = "High" if x > 10 else "Low"\nprint(result)',
         options: ['High', 'Low', 'True', 'Error'],
@@ -339,6 +369,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'elif-chain',
         question: 'Grade classification using nested conditions:\n\nmarks = 85\ngrade = "A" if marks >= 90 else ("B" if marks >= 75 else ___)\nprint(grade)',
         code: 'marks = 85\ngrade = "A" if marks >= 90 else ("B" if marks >= 75 else ___)\nprint(grade)',
         options: null,
@@ -349,6 +380,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'nested-conditions',
         question: 'What is the output?\n\nspeed = 100\nif speed > 80:\n    if speed > 120:\n        print("Danger")\n    else:\n        print("Warning")\nelse:\n    print("Safe")',
         code: 'speed = 100\nif speed > 80:\n    if speed > 120:\n        print("Danger")\n    else:\n        print("Warning")\nelse:\n    print("Safe")',
         options: ['Danger', 'Warning', 'Safe', 'Error'],
@@ -364,6 +396,7 @@ const bank = {
     EASY: [
       {
         questionType: 'MCQ',
+        conceptTag: 'for-range',
         question: 'How many times will "Goal!" be printed?\n\nfor i in range(3):\n    print("Goal!")',
         code: 'for i in range(3):\n    print("Goal!")',
         options: ['2', '3', '4', '0'],
@@ -374,6 +407,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'loop-accumulators',
         question: 'What is printed?\n\ntotal = 0\nfor i in range(1, 4):\n    total += i\nprint(total)',
         code: 'total = 0\nfor i in range(1, 4):\n    total += i\nprint(total)',
         options: ['6', '3', '4', '10'],
@@ -384,6 +418,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'iterate-collections',
         question: 'Print each player in the list:\n\nplayers = ["Alice", "Bob", "Carol"]\nfor ___ in players:\n    print(player)',
         code: 'players = ["Alice", "Bob", "Carol"]\nfor ___ in players:\n    print(player)',
         options: null,
@@ -394,6 +429,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'for-range',
         question: 'What does range(2, 8, 2) produce?',
         code: 'print(list(range(2, 8, 2)))',
         options: ['[2, 4, 6, 8]', '[2, 4, 6]', '[2, 3, 4, 5, 6, 7]', '[0, 2, 4, 6]'],
@@ -406,6 +442,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'break-continue',
         question: 'What is printed?\n\nfor i in range(5):\n    if i == 3:\n        break\n    print(i)',
         code: 'for i in range(5):\n    if i == 3:\n        break\n    print(i)',
         options: ['0 1 2', '0 1 2 3', '0 1 2 3 4', '3'],
@@ -416,6 +453,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'break-continue',
         question: 'Skip even numbers and only print odd numbers:\n\nfor i in range(1, 8):\n    if i % 2 == 0:\n        ___\n    print(i)',
         code: 'for i in range(1, 8):\n    if i % 2 == 0:\n        ___\n    print(i)',
         options: null,
@@ -426,6 +464,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'while',
         question: 'What is printed?\n\ni = 0\nwhile i < 3:\n    print(i)\n    i += 1',
         code: 'i = 0\nwhile i < 3:\n    print(i)\n    i += 1',
         options: ['0 1 2', '1 2 3', '0 1 2 3', '0 1'],
@@ -436,6 +475,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'break-continue',
         question: 'How many times does the loop body run?\n\nfor i in range(10):\n    if i > 4:\n        break',
         code: 'for i in range(10):\n    if i > 4:\n        break',
         options: ['5', '4', '6', '10'],
@@ -468,6 +508,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'nested-loops',
         question: 'What is printed?\n\nmatrix = [[1,2],[3,4],[5,6]]\ntotal = 0\nfor row in matrix:\n    for val in row:\n        total += val\nprint(total)',
         code: 'matrix = [[1,2],[3,4],[5,6]]\ntotal = 0\nfor row in matrix:\n    for val in row:\n        total += val\nprint(total)',
         options: ['21', '15', '10', '6'],
@@ -483,6 +524,7 @@ const bank = {
     EASY: [
       {
         questionType: 'MCQ',
+        conceptTag: 'def-call',
         question: 'What keyword is used to define a function in Python?',
         code: null,
         options: ['func', 'define', 'def', 'function'],
@@ -493,6 +535,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'return-values',
         question: 'What is printed?\n\ndef greet():\n    return "Hello"\n\nprint(greet())',
         code: 'def greet():\n    return "Hello"\n\nprint(greet())',
         options: ['greet', 'Hello', 'None', 'Error'],
@@ -503,6 +546,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'def-call',
         question: 'Define a function that takes one parameter:\n\n___ add(a, b):\n    return a + b',
         code: '___ add(a, b):\n    return a + b',
         options: null,
@@ -513,6 +557,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'return-values',
         question: 'What does a function without a return statement return?',
         code: 'def nothing():\n    x = 5\n\nprint(nothing())',
         options: ['0', 'False', 'None', 'Error'],
@@ -525,6 +570,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'default-args',
         question: 'What is printed?\n\ndef square(n=4):\n    return n ** 2\n\nprint(square())\nprint(square(3))',
         code: 'def square(n=4):\n    return n ** 2\n\nprint(square())\nprint(square(3))',
         options: ['16 9', '4 3', '16 3', 'Error'],
@@ -535,6 +581,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'return-values',
         question: 'Calculate run rate — runs per over:\n\ndef run_rate(runs, overs):\n    ___ runs / overs\n\nprint(run_rate(280, 50))',
         code: 'def run_rate(runs, overs):\n    ___ runs / overs',
         options: null,
@@ -545,6 +592,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'default-args',
         question: 'What is the output?\n\ndef calc(a, b, op="add"):\n    if op == "add":\n        return a + b\n    return a * b\n\nprint(calc(3, 4))\nprint(calc(3, 4, "mul"))',
         code: 'def calc(a, b, op="add"):\n    if op == "add":\n        return a + b\n    return a * b\n\nprint(calc(3, 4))\nprint(calc(3, 4, "mul"))',
         options: ['7 12', '12 7', '7 7', 'Error'],
@@ -555,6 +603,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'scope',
         question: 'What is printed?\n\nx = 10\ndef change():\n    x = 99\nchange()\nprint(x)',
         code: 'x = 10\ndef change():\n    x = 99\nchange()\nprint(x)',
         options: ['99', '10', 'None', 'Error'],
@@ -567,6 +616,7 @@ const bank = {
     HARD: [
       {
         questionType: 'MCQ',
+        conceptTag: 'scope',
         question: 'What is printed?\n\ndef outer():\n    x = 10\n    def inner():\n        return x + 5\n    return inner()\n\nprint(outer())',
         code: 'def outer():\n    x = 10\n    def inner():\n        return x + 5\n    return inner()',
         options: ['15', '10', '5', 'Error'],
@@ -577,6 +627,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'parameters',
         question: 'Function that accepts any number of arguments:\n\ndef total(*___):  \n    return sum(args)\n\nprint(total(10, 20, 30))',
         code: 'def total(*___):\n    return sum(args)',
         options: null,
@@ -587,6 +638,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'lambda',
         question: 'What is the output?\n\ndef apply(func, value):\n    return func(value)\n\nprint(apply(lambda x: x**2, 5))',
         code: 'def apply(func, value):\n    return func(value)\n\nprint(apply(lambda x: x**2, 5))',
         options: ['25', '10', '5', 'Error'],
@@ -602,6 +654,7 @@ const bank = {
     EASY: [
       {
         questionType: 'MCQ',
+        conceptTag: 'indexing',
         question: 'What is printed?\n\nscores = [90, 75, 85]\nprint(scores[1])',
         code: 'scores = [90, 75, 85]\nprint(scores[1])',
         options: ['90', '75', '85', 'Error'],
@@ -612,6 +665,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'mutation-methods',
         question: 'What does len([10, 20, 30, 40]) return?',
         code: 'print(len([10, 20, 30, 40]))',
         options: ['3', '4', '40', '0'],
@@ -622,6 +676,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'mutation-methods',
         question: 'Add a player to the end of the list:\n\nteam = ["Alice", "Bob"]\nteam.___(\"Carol")\nprint(team)',
         code: 'team = ["Alice", "Bob"]\nteam.___("Carol")',
         options: null,
@@ -644,6 +699,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'slicing',
         question: 'What is printed?\n\ndata = [10, 20, 30, 40, 50]\nprint(data[1:4])',
         code: 'data = [10, 20, 30, 40, 50]\nprint(data[1:4])',
         options: ['[10, 20, 30]', '[20, 30, 40]', '[20, 30, 40, 50]', '[10, 20, 30, 40]'],
@@ -654,6 +710,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'mutation-methods',
         question: 'Sort scores in descending order:\n\nscores = [85, 72, 91, 68]\nscores.sort(___ = True)\nprint(scores)',
         code: 'scores = [85, 72, 91, 68]\nscores.sort(___ = True)',
         options: null,
@@ -664,6 +721,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'mutation-methods',
         question: 'What is printed?\n\nteam = ["Alice", "Bob", "Carol"]\nteam.remove("Bob")\nprint(len(team))',
         code: 'team = ["Alice", "Bob", "Carol"]\nteam.remove("Bob")\nprint(len(team))',
         options: ['2', '3', '1', 'Error'],
@@ -686,6 +744,7 @@ const bank = {
     HARD: [
       {
         questionType: 'MCQ',
+        conceptTag: 'mutation-methods',
         question: 'What is printed?\n\na = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)',
         code: 'a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)',
         options: ['[1, 2, 3]', '[1, 2, 3, 4]', '[4]', 'Error'],
@@ -696,6 +755,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'mutation-methods',
         question: 'Create a copy so changes to b don\'t affect a:\n\na = [10, 20, 30]\nb = a.___() \nb.append(40)\nprint(a)',
         code: 'a = [10, 20, 30]\nb = a.___() \nb.append(40)',
         options: null,
@@ -706,6 +766,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'list-comprehension',
         question: 'What is printed?\n\ndata = [[1,2], [3,4], [5,6]]\nflat = [x for row in data for x in row]\nprint(flat)',
         code: 'data = [[1,2], [3,4], [5,6]]\nflat = [x for row in data for x in row]\nprint(flat)',
         options: ['[1, 2, 3, 4, 5, 6]', '[[1,2],[3,4],[5,6]]', '[1, 3, 5]', 'Error'],
@@ -731,6 +792,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'indexing-slicing',
         question: 'What is printed?\n\nword = "cricket"\nprint(word[0])',
         code: 'word = "cricket"\nprint(word[0])',
         options: ['c', 'r', 't', 'Error'],
@@ -741,6 +803,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'case-methods',
         question: 'Convert name to uppercase:\n\nname = "alice"\nprint(name.___ ())',
         code: 'name = "alice"\nprint(name.___ ())',
         options: null,
@@ -763,6 +826,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'case-methods',
         question: 'What is printed?\n\ntext = "Hello World"\nprint(text.lower())',
         code: 'text = "Hello World"\nprint(text.lower())',
         options: ['Hello World', 'hello world', 'HELLO WORLD', 'hello World'],
@@ -773,6 +837,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'find-replace',
         question: 'Check if "cricket" is in the sentence:\n\nsentence = "I love cricket"\nresult = "cricket" ___ sentence\nprint(result)',
         code: 'sentence = "I love cricket"\nresult = "cricket" ___ sentence',
         options: null,
@@ -783,6 +848,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'split-join',
         question: 'What is printed?\n\ndata = "90,75,85,92"\nscores = data.split(",")\nprint(len(scores))',
         code: 'data = "90,75,85,92"\nscores = data.split(",")\nprint(len(scores))',
         options: ['3', '4', '8', 'Error'],
@@ -793,6 +859,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'case-methods',
         question: 'What is printed?\n\nname = "  Python  "\nprint(name.strip())',
         code: 'name = "  Python  "\nprint(name.strip())',
         options: ['  Python  ', 'Python', 'python', 'Error'],
@@ -805,6 +872,7 @@ const bank = {
     HARD: [
       {
         questionType: 'MCQ',
+        conceptTag: 'case-methods',
         question: 'What is printed?\n\nplayer = "rohit sharma"\nprint(player.title())',
         code: 'player = "rohit sharma"\nprint(player.title())',
         options: ['Rohit Sharma', 'ROHIT SHARMA', 'rohit sharma', 'Rohit sharma'],
@@ -815,6 +883,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'formatting',
         question: 'Format a string using f-string:\n\nspeed = 140\nprint(f"Ball speed: ___ km/h")',
         code: 'speed = 140\nprint(f"Ball speed: ___ km/h")',
         options: null,
@@ -825,6 +894,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'indexing-slicing',
         question: 'What is printed?\n\ntext = "Python Programming"\nprint(text[7:14])',
         code: 'text = "Python Programming"\nprint(text[7:14])',
         options: ['Program', 'Programm', 'rogrammi', 'grammin'],
@@ -840,6 +910,7 @@ const bank = {
     EASY: [
       {
         questionType: 'MCQ',
+        conceptTag: 'class-object',
         question: 'What keyword defines a class in Python?',
         code: null,
         options: ['def', 'class', 'object', 'type'],
@@ -850,6 +921,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'init-self',
         question: 'What is the special method called when an object is created?',
         code: null,
         options: ['__start__', '__new__', '__init__', '__create__'],
@@ -860,6 +932,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'init-self',
         question: 'Define a Player class with a name attribute:\n\nclass Player:\n    def __init__(___, name):\n        self.name = name',
         code: 'class Player:\n    def __init__(___, name):\n        self.name = name',
         options: null,
@@ -870,6 +943,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'methods',
         question: 'What is printed?\n\nclass Dog:\n    def speak(self):\n        return "Woof"\n\nd = Dog()\nprint(d.speak())',
         code: 'class Dog:\n    def speak(self):\n        return "Woof"\n\nd = Dog()\nprint(d.speak())',
         options: ['Dog', 'Woof', 'speak', 'Error'],
@@ -882,6 +956,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'attributes',
         question: 'What is printed?\n\nclass Player:\n    def __init__(self, name, score):\n        self.name = name\n        self.score = score\n\np = Player("Alice", 95)\nprint(p.score)',
         code: 'class Player:\n    def __init__(self, name, score):\n        self.name = name\n        self.score = score\n\np = Player("Alice", 95)\nprint(p.score)',
         options: ['Alice', '95', 'score', 'Error'],
@@ -892,6 +967,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'methods',
         question: 'Add a method to calculate average:\n\nclass Stats:\n    def __init__(self, scores):\n        self.scores = scores\n    def average(self):\n        ___ sum(self.scores) / len(self.scores)',
         code: 'class Stats:\n    def average(self):\n        ___ sum(self.scores) / len(self.scores)',
         options: null,
@@ -902,6 +978,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'inheritance',
         question: 'What is inheritance in OOP?',
         code: null,
         options: ['Copying a class', 'A class using attributes/methods of another class', 'Deleting a class', 'Hiding class data'],
@@ -912,6 +989,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'inheritance',
         question: 'What is printed?\n\nclass Animal:\n    def sound(self):\n        return "Generic"\n\nclass Cat(Animal):\n    def sound(self):\n        return "Meow"\n\nc = Cat()\nprint(c.sound())',
         code: 'class Animal:\n    def sound(self):\n        return "Generic"\n\nclass Cat(Animal):\n    def sound(self):\n        return "Meow"\n\nc = Cat()\nprint(c.sound())',
         options: ['Generic', 'Meow', 'Cat', 'Error'],
@@ -924,6 +1002,7 @@ const bank = {
     HARD: [
       {
         questionType: 'MCQ',
+        conceptTag: 'attributes',
         question: 'What is printed?\n\nclass Counter:\n    count = 0\n    def increment(self):\n        Counter.count += 1\n\na = Counter()\nb = Counter()\na.increment()\nb.increment()\nprint(Counter.count)',
         code: 'class Counter:\n    count = 0\n    def increment(self):\n        Counter.count += 1\n\na = Counter()\nb = Counter()\na.increment()\nb.increment()\nprint(Counter.count)',
         options: ['0', '1', '2', 'Error'],
@@ -934,6 +1013,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'inheritance',
         question: 'Call the parent class method from child:\n\nclass Vehicle:\n    def info(self):\n        return "I am a vehicle"\n\nclass Car(Vehicle):\n    def info(self):\n        base = ___(). info()\n        return base + " and a car"',
         code: 'class Car(Vehicle):\n    def info(self):\n        base = ___().info()',
         options: null,
@@ -944,6 +1024,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'encapsulation',
         question: 'What is encapsulation in OOP?',
         code: null,
         options: ['Running code faster', 'Hiding internal details and protecting data', 'Creating multiple instances', 'Inheriting from another class'],
@@ -959,6 +1040,7 @@ const bank = {
     EASY: [
       {
         questionType: 'MCQ',
+        conceptTag: 'try-except',
         question: 'What keyword starts an error-handling block in Python?',
         code: null,
         options: ['catch', 'try', 'handle', 'error'],
@@ -969,6 +1051,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'try-except',
         question: 'What is printed?\n\ntry:\n    x = 10 / 0\nexcept ZeroDivisionError:\n    print("Cannot divide by zero")',
         code: 'try:\n    x = 10 / 0\nexcept ZeroDivisionError:\n    print("Cannot divide by zero")',
         options: ['0', 'Error', 'Cannot divide by zero', 'Nothing'],
@@ -979,6 +1062,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'try-except',
         question: 'Handle any exception generically:\n\ntry:\n    result = int("abc")\n___ Exception as e:\n    print("Error:", e)',
         code: 'try:\n    result = int("abc")\n___ Exception as e:\n    print("Error:", e)',
         options: null,
@@ -989,6 +1073,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'finally',
         question: 'What does the "finally" block do?',
         code: null,
         options: ['Runs only if there is an error', 'Runs only if there is no error', 'Always runs regardless of error', 'Stops the program'],
@@ -1001,6 +1086,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'specific-exceptions',
         question: 'What is printed?\n\ntry:\n    x = int("hello")\nexcept ValueError:\n    print("Value error")\nexcept TypeError:\n    print("Type error")',
         code: 'try:\n    x = int("hello")\nexcept ValueError:\n    print("Value error")\nexcept TypeError:\n    print("Type error")',
         options: ['Value error', 'Type error', 'Both errors', 'Nothing'],
@@ -1011,6 +1097,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'raise',
         question: 'Raise a custom error if score is negative:\n\ndef validate(score):\n    if score < 0:\n        ___ ValueError("Score cannot be negative")',
         code: 'def validate(score):\n    if score < 0:\n        ___ ValueError("Score cannot be negative")',
         options: null,
@@ -1021,6 +1108,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'finally',
         question: 'What is printed?\n\ntry:\n    x = 5 / 0\nexcept ZeroDivisionError:\n    print("Error")\nfinally:\n    print("Done")',
         code: 'try:\n    x = 5 / 0\nexcept ZeroDivisionError:\n    print("Error")\nfinally:\n    print("Done")',
         options: ['Error', 'Done', 'Error\nDone', 'Nothing'],
@@ -1031,6 +1119,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'common-error-types',
         question: 'Which exception is raised by accessing a missing dictionary key?',
         code: 'd = {}\nprint(d["score"])',
         options: ['ValueError', 'IndexError', 'KeyError', 'TypeError'],
@@ -1053,6 +1142,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'specific-exceptions',
         question: 'Return None safely when conversion fails:\n\ndef safe_int(value):\n    try:\n        return int(value)\n    ___ ValueError:\n        return None',
         code: 'def safe_int(value):\n    try:\n        return int(value)\n    ___ ValueError:\n        return None',
         options: null,
@@ -1078,6 +1168,7 @@ const bank = {
     EASY: [
       {
         questionType: 'MCQ',
+        conceptTag: 'linear-search',
         question: 'What is the output of this linear search?\n\ndef find(lst, target):\n    for i in range(len(lst)):\n        if lst[i] == target:\n            return i\n    return -1\n\nprint(find([10, 25, 5, 40], 5))',
         code: 'def find(lst, target):\n    for i in range(len(lst)):\n        if lst[i] == target:\n            return i\n    return -1\n\nprint(find([10, 25, 5, 40], 5))',
         options: ['0', '2', '5', '-1'],
@@ -1088,6 +1179,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'sorting',
         question: 'What does a sorting algorithm do?',
         code: null,
         options: ['Finds an element', 'Arranges elements in order', 'Removes duplicates', 'Counts elements'],
@@ -1098,6 +1190,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'sorting',
         question: 'Sort a list of scores:\n\nscores = [85, 72, 91, 68, 77]\nscores.___()\nprint(scores)',
         code: 'scores = [85, 72, 91, 68, 77]\nscores.___\nprint(scores)',
         options: null,
@@ -1108,6 +1201,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'complexity',
         question: 'What is the time complexity of linear search in the worst case?',
         code: null,
         options: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'],
@@ -1120,6 +1214,7 @@ const bank = {
     MEDIUM: [
       {
         questionType: 'MCQ',
+        conceptTag: 'sorting',
         question: 'What is printed?\n\ndef bubble_pass(arr):\n    for i in range(len(arr)-1):\n        if arr[i] > arr[i+1]:\n            arr[i], arr[i+1] = arr[i+1], arr[i]\n    return arr\n\nprint(bubble_pass([5, 3, 8, 1]))',
         code: 'def bubble_pass(arr):\n    for i in range(len(arr)-1):\n        if arr[i] > arr[i+1]:\n            arr[i], arr[i+1] = arr[i+1], arr[i]\n    return arr\n\nprint(bubble_pass([5, 3, 8, 1]))',
         options: ['[1, 3, 5, 8]', '[3, 5, 1, 8]', '[3, 5, 8, 1]', '[5, 3, 8, 1]'],
@@ -1130,6 +1225,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'min-max',
         question: 'Find the minimum value in a list manually:\n\ndef find_min(arr):\n    minimum = arr[0]\n    for x in arr:\n        if x ___ minimum:\n            minimum = x\n    return minimum',
         code: 'def find_min(arr):\n    minimum = arr[0]\n    for x in arr:\n        if x ___ minimum:\n            minimum = x\n    return minimum',
         options: null,
@@ -1140,6 +1236,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'binary-search',
         question: 'Why is binary search faster than linear search?',
         code: null,
         options: ['It checks every element', 'It eliminates half the elements each step', 'It sorts first', 'It uses more memory'],
@@ -1150,6 +1247,7 @@ const bank = {
       },
       {
         questionType: 'MCQ',
+        conceptTag: 'recursion',
         question: 'What is the output?\n\ndef factorial(n):\n    if n == 0:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(4))',
         code: 'def factorial(n):\n    if n == 0:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(4))',
         options: ['24', '12', '4', 'Error'],
@@ -1162,6 +1260,7 @@ const bank = {
     HARD: [
       {
         questionType: 'MCQ',
+        conceptTag: 'recursion',
         question: 'What is the output?\n\ndef fib(n):\n    if n <= 1:\n        return n\n    return fib(n-1) + fib(n-2)\n\nprint(fib(6))',
         code: 'def fib(n):\n    if n <= 1:\n        return n\n    return fib(n-1) + fib(n-2)\n\nprint(fib(6))',
         options: ['8', '13', '5', '21'],
@@ -1172,6 +1271,7 @@ const bank = {
       },
       {
         questionType: 'FILL_BLANK',
+        conceptTag: 'binary-search',
         question: 'Binary search — fill in the condition:\n\ndef binary_search(arr, target):\n    lo, hi = 0, len(arr) - 1\n    while lo ___ hi:\n        mid = (lo + hi) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return -1',
         code: 'while lo ___ hi:',
         options: null,

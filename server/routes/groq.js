@@ -8,6 +8,7 @@ const feedbackMessages = require('../constants/feedbackMessages')
 const pythonNotes      = require('../data/pythonNotes')
 const { isAnswerMatch } = require('../utils/answerMatch')
 const { runPython } = require('../utils/pistonExec')
+const { CONCEPT_TAGS, LABELS, resolveTag } = require('../constants/conceptTags')
 
 const router = express.Router()
 const optionalProtect = protect.optional
@@ -47,7 +48,7 @@ router.post('/question', optionalProtect, async (req, res) => {
 
     const {
       topicId: _topicId, concept, level, difficulty, questionsAttempted,
-      previousQuestion, previousQuestions, previousAnswer, language: requestedLanguage, hobby: requestedHobby,
+      previousQuestion, previousQuestions, previousAnswer, recentTags: _recentTags, language: requestedLanguage, hobby: requestedHobby,
     } = req.body || {}
     const topicId = _topicId || concept
     if (!topicId) return res.status(200).json({ useFallback: true, reason: 'missing_topic' })
@@ -64,6 +65,11 @@ router.post('/question', optionalProtect, async (req, res) => {
     const qType    = getQuestionType(level, difficulty)
 
     const notes = pythonNotes[topicId]
+
+    const recentTags = (Array.isArray(_recentTags) ? _recentTags : [])
+      .filter(t => typeof t === 'string').map(t => t.slice(0, 40)).slice(0, 5)
+    const allowedTags = CONCEPT_TAGS[topicId] || []
+    const tagHints = allowedTags.map(t => `${t} (${LABELS[`${topicId}/${t}`]})`).join(', ')
 
     const stemSubject    = stemCtx?.subject || 'Science'
     const stemConnection = stemCtx?.connection || 'programming fundamentals'
@@ -142,12 +148,14 @@ ABSOLUTE RULES:
 - The "code" field and the "question" text must describe the SAME code —
   never show one version in the question wording and a different version
   in "code"
+- conceptTag: choose ONLY from the allowed tags, the single concept this question primarily tests. Allowed: ${tagHints || 'general'}. Prefer tags NOT in recent tags [${recentTags.join(', ')}] for variety, while still matching the requested difficulty.
 - Hints: hint1 = Python clue from knowledge base | hint2 = STEM+hobby analogy | hint3 = near-answer
 - ${langInstr}
 
 Return ONLY this JSON — no markdown, no explanation:
 {
   "questionType": "${qType}",
+  "conceptTag": "one-of-the-allowed-tags",
   "question": "question text",
   "code": "code snippet or null",
   "options": ["A text", "B text", "C text", "D text"] or null,
@@ -202,6 +210,8 @@ Return ONLY this JSON — no markdown, no explanation:
         lastReason = 'bad_json'
         continue
       }
+
+      candidate.conceptTag = resolveTag(topicId, candidate.conceptTag)
 
       if (isDuplicateQuestion(candidate.question)) {
         console.error('Question Generation Warning: duplicate question detected, retrying', { topicId, attempt })

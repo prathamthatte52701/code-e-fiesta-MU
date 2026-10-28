@@ -4,8 +4,49 @@ const Progress   = require('../models/Progress')
 const User       = require('../models/User')
 const protect    = require('../middleware/auth')
 const { getNextDifficulty, calculatePoints } = require('../utils/adaptive')
+const { CONCEPT_TAGS, LABELS, isValidTag, resolveTag, toKey, parseKey } = require('../constants/conceptTags')
+const { updateMastery, getMasteryBand, snapshotAverage } = require('../utils/mastery')
 
 const router = express.Router()
+
+// GET /api/progress/mastery — must stay above '/:userId'
+router.get('/mastery', protect, async (req, res) => {
+  try {
+    const docs = await Progress.find({ userId: req.user._id })
+    const concepts = []
+    const byDay = {}
+    let updatedAt = null
+    for (const doc of docs) {
+      if (doc.updatedAt && (!updatedAt || doc.updatedAt > updatedAt)) updatedAt = doc.updatedAt
+      for (const m of doc.conceptMastery) {
+        const parsed = parseKey(m.key)
+        if (!parsed) continue
+        concepts.push({
+          key: m.key,
+          topicId: parsed.topicId,
+          tag: parsed.slug,
+          label: LABELS[m.key] || m.key,
+          score: m.score,
+          band: getMasteryBand(m.score),
+          attempts: m.attempts,
+          correct: m.correct,
+          lastSeen: m.lastSeen,
+        })
+      }
+      for (const h of doc.masteryHistory) {
+        (byDay[h.day] = byDay[h.day] || []).push(h.avg)
+      }
+    }
+    concepts.sort((a, b) => a.score - b.score)
+    const history = Object.keys(byDay).sort().slice(-60).map(day => ({
+      day,
+      avg: Math.round(byDay[day].reduce((a, b) => a + b, 0) / byDay[day].length),
+    }))
+    res.json({ concepts, history, updatedAt })
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch mastery' })
+  }
+})
 
 // GET /api/progress/:userId
 router.get('/:userId', protect, async (req, res) => {
@@ -22,7 +63,7 @@ router.post('/update', protect, async (req, res) => {
   try {
     const {
       topicId, level, correct, timeTaken,
-      concept, questionText, userAnswer, correctAnswer, speedMode,
+      concept, conceptTag, difficulty, questionText, userAnswer, correctAnswer, speedMode,
       currentBatchCorrect, currentBatchCount, failCount, levelType, theoryNeeded,
       currentDifficulty, countAttempt = true, completeLevel = false, resetLevelStats = false,
     } = req.body
@@ -88,10 +129,26 @@ router.post('/update', protect, async (req, res) => {
       }
     }
 
+    // Per-concept mastery: every real answer, right or wrong
+    const realAttempt = countAttempt && !resetLevelStats
+    const tag = resolveTag(topicId, conceptTag)
+    const key = toKey(topicId, tag)
+    if (realAttempt) {
+      updateMastery(progress.conceptMastery, key, { correct: !!correct, difficulty })
+      const day = new Date().toISOString().slice(0, 10)
+      const entry = { day, avg: snapshotAverage(progress.conceptMastery) }
+      const history = progress.masteryHistory.filter(h => h.day !== day)
+      history.push(entry)
+      progress.masteryHistory = history.slice(-60)
+      progress.markModified('conceptMastery')
+      progress.markModified('masteryHistory')
+    }
+
     // Track wrong answers
     if (countAttempt && !resetLevelStats && !correct && concept) {
       progress.wrongAnswers.push({
         concept,
+        conceptTag: tag,
         questionText: questionText || '',
         userAnswer: userAnswer || '',
         correctAnswer: correctAnswer || '',
@@ -152,6 +209,10 @@ router.post('/update', protect, async (req, res) => {
       leveledUp: progress.currentLevel > level,
       topicCompleted: progress.topicCompleted,
       consecutiveCorrect: progress.consecutiveCorrect,
+      ...(realAttempt && (() => {
+        const m = progress.conceptMastery.find(e => e.key === key)
+        return { mastery: { key, score: m.score, band: getMasteryBand(m.score) } }
+      })()),
     })
 
   } catch (err) {
@@ -208,9 +269,31 @@ router.post('/migrate', protect, async (req, res) => {
           questionText: answer.questionText || '',
           userAnswer: answer.userAnswer || '',
           correctAnswer: answer.correctAnswer || '',
+          conceptTag: resolveTag(item.topicId, answer.conceptTag),
           level: Number(answer.level) || 1,
           timestamp: answer.timestamp || new Date(),
         }))
+      }
+
+      if (Array.isArray(item.conceptMastery)) {
+        const merged = progress.conceptMastery.map(e => e.toObject ? e.toObject() : e)
+        for (const m of item.conceptMastery) {
+          const parsed = parseKey(m?.key)
+          if (!parsed || !CONCEPT_TAGS[parsed.topicId] || !isValidTag(parsed.topicId, parsed.slug)) continue
+          const attempts = Math.max(0, Math.floor(Number(m.attempts)) || 0)
+          const clean = {
+            key: m.key,
+            score: Math.min(100, Math.max(0, Number(m.score) || 0)),
+            attempts,
+            correct: Math.min(attempts, Math.max(0, Math.floor(Number(m.correct)) || 0)),
+            lastSeen: m.lastSeen && !isNaN(new Date(m.lastSeen)) ? new Date(m.lastSeen) : null,
+          }
+          const i = merged.findIndex(e => e.key === clean.key)
+          if (i === -1) merged.push(clean)
+          else if (clean.attempts > merged[i].attempts) merged[i] = clean
+        }
+        progress.conceptMastery = merged.slice(0, 80)
+        progress.markModified('conceptMastery')
       }
 
       progress.updatedAt = new Date()

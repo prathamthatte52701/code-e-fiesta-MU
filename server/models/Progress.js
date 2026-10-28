@@ -28,7 +28,16 @@ const wrongAnswerSchema = new Schema({
   userAnswer: String,
   correctAnswer: String,
   level: Number,
+  conceptTag: { type: String, default: '' },
   timestamp: { type: Date, default: Date.now },
+}, { _id: false })
+
+const conceptMasterySchema = new Schema({
+  key: String,
+  score: { type: Number, default: 50 },
+  attempts: { type: Number, default: 0 },
+  correct: { type: Number, default: 0 },
+  lastSeen: Date,
 }, { _id: false })
 
 const progressSchema = new Schema({
@@ -54,6 +63,9 @@ const progressSchema = new Schema({
   aiChallengeScore: { type: Number, default: 0 },
 
   wrongAnswers: { type: [wrongAnswerSchema], default: [] },
+
+  conceptMastery: { type: [conceptMasterySchema], default: [] },
+  masteryHistory: { type: [{ day: String, avg: Number, _id: false }], default: [] },
 
   lastRevisionDate: { type: Date, default: null },
   revisionDue: { type: Boolean, default: false },
