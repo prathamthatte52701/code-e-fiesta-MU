@@ -7,6 +7,7 @@ import BottomNav from './components/shared/BottomNav'
 import Toast from './components/shared/Toast'
 import { showToast } from './components/shared/Toast'
 import LanguageSwitch from './components/shared/LanguageSwitch'
+import api from './utils/api'
 import './styles/globals.css'
 
 import Login              from './pages/Login'
@@ -17,6 +18,7 @@ import TopicPage          from './pages/TopicPage'
 import AIChallenge        from './pages/AIChallenge'
 import BossBattle         from './pages/BossBattle'
 import AdaptiveLearning   from './pages/AdaptiveLearning'
+import Report             from './pages/Report'
 import Leaderboard        from './pages/Leaderboard'
 import Profile            from './pages/Profile'
 import Avatar             from './pages/Avatar'
@@ -146,6 +148,7 @@ function AppRoutes() {
       <Route path="/challenge/:topicId" element={<PrivateRoute><AIChallenge /></PrivateRoute>} />
       <Route path="/boss-ai/:topicId"   element={<PrivateRoute><BossBattle /></PrivateRoute>} />
       <Route path="/adaptive-learning"  element={<AccountRoute message="Adaptive Learning Intelligence is available after login."><AdaptiveLearning /></AccountRoute>} />
+      <Route path="/report"             element={<AccountRoute message="Reports are available after login."><Report /></AccountRoute>} />
       <Route path="/leaderboard"        element={<AccountRoute message="Leaderboards are available after login."><Leaderboard /></AccountRoute>} />
       <Route path="/profile"            element={<AccountRoute message="Create an account to save profile stats, badges, and leaderboard progress."><Profile /></AccountRoute>} />
       <Route path="/avatar"             element={<PrivateRoute><Avatar /></PrivateRoute>} />
@@ -156,6 +159,9 @@ function AppRoutes() {
 }
 
 export default function App() {
+  // Wake a sleeping host while the user is on the login page; failures are irrelevant
+  useEffect(() => { api.get('/health').catch(() => {}) }, [])
+
   return (
     <ErrorBoundary>
       <BrowserRouter>

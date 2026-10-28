@@ -9,6 +9,7 @@ import ConceptMap from '../components/dashboard/ConceptMap'
 import DailyChallenge from '../components/dashboard/DailyChallenge'
 import RevisionCard from '../components/dashboard/RevisionCard'
 import ChallengeAccessCards from '../components/dashboard/ChallengeAccessCards'
+import LearningPathCard from '../components/dashboard/LearningPathCard'
 import LeaderboardSneak from '../components/dashboard/LeaderboardSneak'
 import { HOBBIES, TOPICS } from '../utils/constants'
 import { getGuestProgress } from '../utils/guestProgress'
@@ -190,6 +191,9 @@ export default function Home() {
 
           {/* LEFT COLUMN */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+
+            {/* Personalized Learning Path */}
+            {!user.isGuest && <LearningPathCard user={user} progress={progress} />}
 
             {/* Revision Alert */}
             {revisionTopics.length > 0 && <RevisionCard topics={revisionTopics} language={user.language} />}

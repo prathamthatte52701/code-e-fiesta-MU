@@ -144,7 +144,10 @@ function GapsSection({ gaps }) {
 
   return (
     <section style={box}>
-      <h2 style={{ color: colors.text, margin: '0 0 12px', fontSize: 18 }}>Your Learning Gaps</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
+        <h2 style={{ color: colors.text, margin: 0, fontSize: 18 }}>Your Learning Gaps</h2>
+        <button onClick={() => navigate('/report')} style={{ background: 'none', border: `1px solid ${colors.border}`, color: colors.accent, borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>View full report</button>
+      </div>
       {body}
     </section>
   );

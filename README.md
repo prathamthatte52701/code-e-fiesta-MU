@@ -53,6 +53,18 @@ Main goals:
 
 ---
 
+## Problem Statement Mapping
+
+| Requirement | How ZenithLearn covers it |
+|---|---|
+| Assess | 10 topics x 5 levels, plus an optional 5-question diagnostic per topic |
+| Identify gaps | Concept-level mastery and a gap analyzer with prerequisite root-cause tracing |
+| Personalized explanations | Hobby- and language-aware AI theory and explanations, plus interactive concept visuals |
+| Adapt the path | Adaptive question batches and diagnostic placement |
+| Track progress, actionable feedback | Learning Report with charts and next exercises (`/report`) |
+
+---
+
 ## Core Features
 
 - Normal login and signup with JWT authentication.
@@ -178,6 +190,18 @@ Install these before running the project:
 - MongoDB local server or MongoDB Atlas URI
 - Groq API keys
 - Modern browser such as Chrome or Edge
+
+---
+
+## Demo Account
+
+Run `node scripts/seedDemo.js` from the `server` folder (needs `MONGODB_URI`), then log in with:
+
+```text
+demo@stembhasha.com / Demo@1234
+```
+
+The demo user has a ready-made gap story (Conditions is the root cause of weak Loops). Dev Mode is controlled by `ENABLE_DEV_LOGIN`.
 
 ---
 

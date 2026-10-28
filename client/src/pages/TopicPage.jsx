@@ -10,6 +10,7 @@ import LoadingSpinner from '../components/shared/LoadingSpinner'
 import DidYouKnow from '../components/dashboard/DidYouKnow'
 import QuestionEngine from '../components/question/QuestionEngine'
 import DiagnosticQuiz from '../components/diagnostic/DiagnosticQuiz'
+import ConceptVisual from '../components/visuals/ConceptVisual'
 import { TOPICS } from '../utils/constants'
 import { getGuestTopicProgress, saveGuestUser } from '../utils/guestProgress'
 import { normalizeLanguage, t } from '../utils/i18n'
@@ -356,6 +357,7 @@ export default function TopicPage() {
               ) : (
                 <TheoryDisplay content={theory} colors={colors} />
               )}
+              {!theoryLoading && <ConceptVisual topicId={topicId} language={effectiveLanguage} />}
             </div>
 
             {!theoryLoading && <DidYouKnow topicId={topicId} language={user?.language} />}

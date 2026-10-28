@@ -3,6 +3,8 @@ import { useTheme } from '../../context/ThemeContext'
 import { useAuth } from '../../context/AuthContext'
 import { CheckCircle, Lock, Zap } from 'lucide-react'
 import { TOPICS } from '../../utils/constants'
+import useGaps from '../../hooks/useGaps'
+import { bandColor } from '../../utils/topicGraph'
 
 const PREREQS = {
   variables: [],
@@ -21,6 +23,7 @@ export default function ConceptMap({ progress = [], language = 'english' }) {
   const { colors } = useTheme()
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { data: gaps } = useGaps()
   const safeProgress = Array.isArray(progress) ? progress : []
   const isDeveloper = Boolean(user?.isDeveloper)
 
@@ -52,6 +55,7 @@ export default function ConceptMap({ progress = [], language = 'english' }) {
         const current = topic.id === currentTopicId && unlocked && !done
         const locked = !unlocked
         const prereqCount = PREREQS[topic.id]?.length || 0
+        const score = gaps?.topicMastery?.find(m => m.topicId === topic.id)?.score
 
         let background = colors.surface
         let borderColor = colors.border
@@ -94,6 +98,7 @@ export default function ConceptMap({ progress = [], language = 'english' }) {
             disabled={!unlocked}
             title={locked ? 'Complete prerequisites first' : undefined}
             style={{
+              position: 'relative',
               minHeight: 126,
               background,
               border: `2px solid ${borderColor}`,
@@ -114,6 +119,9 @@ export default function ConceptMap({ progress = [], language = 'english' }) {
               e.currentTarget.style.transform = 'translateY(0)'
             }}
           >
+            {Number.isFinite(score) && (
+              <span title={`Mastery ${score}`} style={{ position: 'absolute', top: 8, right: 8, width: 10, height: 10, borderRadius: '50%', background: bandColor(score, colors) }} />
+            )}
             <div
               style={{
                 width: 34,
