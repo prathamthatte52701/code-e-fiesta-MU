@@ -67,6 +67,17 @@ const progressSchema = new Schema({
   conceptMastery: { type: [conceptMasterySchema], default: [] },
   masteryHistory: { type: [{ day: String, avg: Number, _id: false }], default: [] },
 
+  diagnostic: {
+    type: new Schema({
+      done: { type: Boolean, default: false },
+      at: Date,
+      correct: { type: Number, default: 0 },
+      total: { type: Number, default: 0 },
+      placement: { type: String, default: '' },
+    }, { _id: false }),
+    default: () => ({}),
+  },
+
   lastRevisionDate: { type: Date, default: null },
   revisionDue: { type: Boolean, default: false },
 

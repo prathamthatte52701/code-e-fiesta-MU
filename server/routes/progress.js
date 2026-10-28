@@ -6,6 +6,8 @@ const protect    = require('../middleware/auth')
 const { getNextDifficulty, calculatePoints } = require('../utils/adaptive')
 const { CONCEPT_TAGS, LABELS, isValidTag, resolveTag, toKey, parseKey } = require('../constants/conceptTags')
 const { updateMastery, getMasteryBand, snapshotAverage } = require('../utils/mastery')
+const { analyzeGaps } = require('../utils/gapAnalyzer')
+const topics = require('../constants/topics')
 
 const router = express.Router()
 
@@ -45,6 +47,17 @@ router.get('/mastery', protect, async (req, res) => {
     res.json({ concepts, history, updatedAt })
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch mastery' })
+  }
+})
+
+// GET /api/progress/gaps - must stay above '/:userId'
+router.get('/gaps', protect, async (req, res) => {
+  try {
+    const progressDocs = await Progress.find({ userId: req.user._id }).lean()
+    res.json(analyzeGaps({ progressDocs, topics }))
+  } catch (err) {
+    console.error('Gap analysis error:', err)
+    res.status(500).json({ message: 'Failed to analyze gaps' })
   }
 })
 
@@ -218,6 +231,77 @@ router.post('/update', protect, async (req, res) => {
   } catch (err) {
     console.error('Progress update error:', err)
     res.status(500).json({ message: 'Failed to update progress' })
+  }
+})
+
+// POST /api/progress/diagnostic - seeds mastery + start difficulty only (no points, streaks, badges or level changes)
+router.post('/diagnostic', protect, async (req, res) => {
+  try {
+    const { topicId, answers } = req.body
+    const topic = topics.find(t => t.topicId === topicId)
+    if (!topic) return res.status(400).json({ message: 'Unknown topic' })
+    if (!Array.isArray(answers) || answers.length < 1 || answers.length > 6) {
+      return res.status(400).json({ message: 'answers must have 1-6 items' })
+    }
+    const allowed = [topicId, ...topic.prerequisites]
+    if (answers.some(a => !a || !allowed.includes(a.topicId))) {
+      return res.status(400).json({ message: 'Answer topic must be the topic or a direct prerequisite' })
+    }
+
+    const userId = req.user._id
+    const docs = {}
+    const getDoc = async (id) => {
+      if (!docs[id]) docs[id] = (await Progress.findOne({ userId, topicId: id })) || new Progress({ userId, topicId: id })
+      return docs[id]
+    }
+
+    const progress = await getDoc(topicId)
+    if (progress.diagnostic && progress.diagnostic.done) {
+      return res.json({ alreadyDone: true, diagnostic: progress.diagnostic })
+    }
+
+    const updatedKeys = new Map()
+    let c = 0
+    let n = 0
+    for (const item of answers) {
+      const correct = !!item.correct
+      const difficulty = ['EASY', 'MEDIUM', 'HARD'].includes(item.difficulty) ? item.difficulty : 'MEDIUM'
+      const key = toKey(item.topicId, resolveTag(item.topicId, item.conceptTag))
+      const doc = await getDoc(item.topicId)
+      updateMastery(doc.conceptMastery, key, { correct, difficulty })
+      updatedKeys.set(key, doc)
+      if (item.topicId === topicId) {
+        n += 1
+        if (correct) c += 1
+      }
+    }
+
+    const level1 = progress.levels['1']
+    let placement = 'standard-start'
+    if (n >= 3 && c / n >= 0.75 && !level1.questionsAttempted) {
+      level1.currentDifficulty = 'MEDIUM'
+      placement = 'medium-start'
+    }
+    progress.diagnostic = { done: true, at: new Date(), correct: c, total: n, placement }
+
+    for (const doc of Object.values(docs)) {
+      doc.updatedAt = new Date()
+      doc.markModified('conceptMastery')
+      doc.markModified('levels')
+      await doc.save()
+    }
+
+    res.json({
+      diagnostic: progress.diagnostic,
+      placement,
+      mastery: [...updatedKeys].map(([key, doc]) => {
+        const m = doc.conceptMastery.find(e => e.key === key)
+        return { key, score: m.score, band: getMasteryBand(m.score) }
+      }),
+    })
+  } catch (err) {
+    console.error('Diagnostic error:', err)
+    res.status(500).json({ message: 'Failed to save diagnostic' })
   }
 })
 

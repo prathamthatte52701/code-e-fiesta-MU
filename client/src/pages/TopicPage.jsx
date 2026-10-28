@@ -9,6 +9,7 @@ import SpeakButton from '../components/shared/SpeakButton'
 import LoadingSpinner from '../components/shared/LoadingSpinner'
 import DidYouKnow from '../components/dashboard/DidYouKnow'
 import QuestionEngine from '../components/question/QuestionEngine'
+import DiagnosticQuiz from '../components/diagnostic/DiagnosticQuiz'
 import { TOPICS } from '../utils/constants'
 import { getGuestTopicProgress, saveGuestUser } from '../utils/guestProgress'
 import { normalizeLanguage, t } from '../utils/i18n'
@@ -165,6 +166,7 @@ export default function TopicPage() {
   const [theoryLoading, setTheoryLoading] = useState(true)
   const [speedMode, setSpeedMode]     = useState(user?.speedModeEnabled || false)
   const [progress, setProgress]       = useState(null)
+  const [progressLoaded, setProgressLoaded] = useState(false)
 
   const topicInfo = TOPICS.find(t => t.id === topicId) || { id: topicId, name: topicId, nameHindi: topicId }
   const effectiveLanguage = normalizeLanguage(user?.language)
@@ -209,6 +211,7 @@ export default function TopicPage() {
       const tp  = (res.data || []).find(p => p.topicId === topicId)
       setProgress(tp || null)
     } catch {}
+    setProgressLoaded(true)
   }
 
   const toggleSpeedMode = async () => {
@@ -232,6 +235,9 @@ export default function TopicPage() {
   const levelData      = progress?.levels?.[levelKey] || {}
   const initDifficulty = levelData.currentDifficulty || 'EASY'
   const initQAttempted = levelData.questionsAttempted || 0
+  const showDiagnostic = !user?.isGuest && progressLoaded
+    && progress?.diagnostic?.done !== true
+    && !Object.values(progress?.levels || {}).some(l => l?.questionsAttempted > 0)
   const canAccessChallenge = user?.isDeveloper || ((user?.streak >= 7 || progress?.aiChallengeUnlocked) && progress?.topicCompleted)
 
   return (
@@ -353,6 +359,8 @@ export default function TopicPage() {
             </div>
 
             {!theoryLoading && <DidYouKnow topicId={topicId} language={user?.language} />}
+
+            {showDiagnostic && <DiagnosticQuiz key={topicId} topicId={topicId} onDone={fetchProgress} />}
 
             <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
               <button

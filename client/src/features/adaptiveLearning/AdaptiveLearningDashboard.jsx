@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Activity, Brain, CheckCircle, Code2, Target, TrendingUp, Zap } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import useGaps from '../../hooks/useGaps';
 import { LANGUAGES, normalizeLanguage } from '../../utils/i18n';
 import { simulatedLearners } from './simulatedLearners';
 import {
@@ -39,6 +41,115 @@ const ProgressBar = ({ value, color }) => {
   );
 };
 
+const bandColor = (score, colors) => {
+  if (score === null || score === undefined) return colors.textMuted;
+  if (score < 40) return colors.error;
+  if (score < 60) return colors.warning;
+  return colors.success;
+};
+
+function GapsSection({ gaps }) {
+  const { colors } = useTheme();
+  const navigate = useNavigate();
+  const { data, loading, error, refetch } = gaps;
+  const box = { background: colors.surface, border: `1px solid ${colors.border}`, borderRadius: 16, padding: 18 };
+  const tag = { color: colors.textMuted, background: `${colors.textMuted}18`, borderRadius: 999, padding: '2px 8px', fontSize: 11, marginLeft: 8 };
+
+  let body;
+  if (loading && !data) {
+    body = <div style={{ color: colors.textMuted, fontSize: 14 }}>Loading your gaps...</div>;
+  } else if (error && !data) {
+    body = (
+      <div style={{ color: colors.error, fontSize: 14 }}>
+        {error}{' '}
+        <button onClick={refetch} style={{ marginLeft: 8, background: colors.accent, color: '#fff', border: 'none', borderRadius: 8, padding: '6px 12px', cursor: 'pointer' }}>Retry</button>
+      </div>
+    );
+  } else if (data) {
+    const nameOf = (id) => data.topicMastery.find(t => t.topicId === id)?.name || id;
+    const rec = data.recommendation;
+    const hasData = data.topicMastery.some(t => t.score !== null);
+    body = (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {rec && (
+          <div style={{ padding: 14, borderRadius: 12, background: `${colors.accent}12`, border: `1px solid ${colors.accent}40` }}>
+            <div style={{ color: colors.textMuted, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' }}>Recommended: {rec.type.replace('-', ' ')}</div>
+            <p style={{ color: colors.text, fontSize: 14, margin: '6px 0 10px', lineHeight: 1.6 }}>{rec.reason}</p>
+            {rec.topicId && (
+              <button onClick={() => navigate(`/topic/${rec.topicId}`)} style={{ background: colors.accent, color: '#fff', border: 'none', borderRadius: 10, padding: '8px 16px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                Go to {nameOf(rec.topicId)}
+              </button>
+            )}
+          </div>
+        )}
+
+        {!hasData && <div style={{ color: colors.textMuted, fontSize: 14 }}>Answer a few questions to see your gaps</div>}
+
+        {data.rootCauses.length > 0 && (
+          <div style={{ padding: 14, borderRadius: 12, background: `${colors.warning}12`, border: `1px solid ${colors.warning}55` }}>
+            <h3 style={{ color: colors.text, margin: '0 0 8px', fontSize: 15 }}>Root cause</h3>
+            {data.rootCauses.map(rc => {
+              const names = rc.explains.map(nameOf);
+              return (
+                <div key={rc.topicId} style={{ marginBottom: 6 }}>
+                  <div style={{ color: colors.text, fontWeight: 700, fontSize: 14 }}>{rc.path.map(nameOf).join(' -> ')}</div>
+                  <div style={{ color: colors.textMuted, fontSize: 13 }}>{names.join(' and ')} {names.length > 1 ? 'are' : 'is'} weak because {rc.name} is weak.</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {hasData && (
+          <div>
+            <h3 style={{ color: colors.text, margin: '0 0 10px', fontSize: 15 }}>Topic mastery</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {data.topicMastery.map(t => (
+                <div key={t.topicId}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 13, color: colors.text, marginBottom: 4 }}>
+                    <span>
+                      {t.name}
+                      {t.score === null && <span style={tag}>No data yet</span>}
+                      {t.score !== null && t.confidence === 'low' && <span style={tag}>low confidence</span>}
+                    </span>
+                    <span style={{ color: bandColor(t.score, colors) }}>{t.score === null ? '-' : `${t.score}% - ${t.band}`}</span>
+                  </div>
+                  <ProgressBar value={t.score ?? 0} color={bandColor(t.score, colors)} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {data.weakConcepts.length > 0 && (
+          <div>
+            <h3 style={{ color: colors.text, margin: '0 0 10px', fontSize: 15 }}>Weak concepts</h3>
+            {data.weakConcepts.map(c => (
+              <div key={c.key} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 13, color: colors.text, padding: '6px 0', borderBottom: `1px solid ${colors.border}` }}>
+                <span>{c.label} <span style={{ color: colors.textMuted }}>({nameOf(c.topicId)})</span></span>
+                <span style={{ color: bandColor(c.score, colors) }}>{c.score}% - {c.attempts} tries</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {data.coverage?.specificShare != null && (
+          <div style={{ color: colors.textMuted, fontSize: 11 }}>
+            Tagging coverage: {Math.round(data.coverage.specificShare * 100)}% of answers matched a specific concept
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <section style={box}>
+      <h2 style={{ color: colors.text, margin: '0 0 12px', fontSize: 18 }}>Your Learning Gaps</h2>
+      {body}
+    </section>
+  );
+}
+
 const statusColor = (status, colors) => {
   if (status === 'Promoted' || status === 'Ready to Progress') return colors.success;
   if (status === 'Prerequisite Support') return colors.warning;
@@ -51,6 +162,9 @@ const displayLanguage = (language) => LANGUAGES[normalizeLanguage(language)]?.la
 export default function AdaptiveLearningDashboard() {
   const { colors } = useTheme();
   const { user } = useAuth();
+  const realUser = !!user && !user.isGuest;
+  const gapsState = useGaps();
+  const gaps = gapsState.data;
   const profiles = useMemo(() => buildLearnerDNA(simulatedLearners), []);
   const simulatedProfiles = profiles.filter(profile => profile.validationType === 'simulated');
   const summary = useMemo(() => buildAnalyticsSummary(simulatedProfiles), [simulatedProfiles]);
@@ -61,8 +175,8 @@ export default function AdaptiveLearningDashboard() {
     profileType: user?.isDeveloper ? 'Development Mode' : 'Logged-in Learner',
     preferredLanguage: displayLanguage(user?.language || selected?.preferredLanguage),
     hobby: user?.hobby || selected?.preferredHobby || 'Not set',
-    weakConcepts: ['Variables'],
-    codingMistakes: ['Logic error'],
+    weakConcepts: realUser ? (gaps?.weakConcepts || []).map(c => c.label) : ['Variables'],
+    codingMistakes: realUser ? ['Not tracked yet'] : ['Logic error'],
   };
 
   return (
@@ -94,9 +208,11 @@ export default function AdaptiveLearningDashboard() {
         </div>
       </section>
 
+      {realUser && <GapsSection gaps={gapsState} />}
+
       <section>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', marginBottom: 12, flexWrap: 'wrap' }}>
-          <h2 style={{ color: colors.text, margin: 0, fontSize: 18 }}>Learners Profile</h2>
+          <h2 style={{ color: colors.text, margin: 0, fontSize: 18 }}>Simulated validation cohort (demo data)</h2>
           <span style={{
             color: colors.warning,
             background: `${colors.warning}18`,
